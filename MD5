@@ -1,0 +1,15 @@
+b4ea8312a58dd4776a19fa5c0cc79d8b *DESCRIPTION
+f2e6ffe8cd437d9f4d4b50db45b9a95d *NAMESPACE
+dd2bc53d41da8a0699b98dc62dae91be *R/checkpoint-package.R
+ae2d8c69463ec982eb99515a0edd9ff5 *R/checkpoint.R
+9bf97bb166db9599bd2740f8786fb5db *R/checkpoint_paths.R
+c781b6d55691c356f423a952c4691473 *R/scanRepoPackages.R
+3b6552bd3aaafec4c804972285668733 *R/test-common-functions.R
+252dda5435eba8f00a7cfa368a19f95d *R/zzz.R
+d3d32b63ec4f1f4e62c70efacc2dd41b *inst/examples/example_checkpoint.R
+d6db00cdcfd061e105308df80a8073cc *inst/img/Thumbs.db
+362ed45f408550e7188fa6cc07fb25b0 *man/checkpoint-package.Rd
+23f60281ea1da9a96bbe4ba768af7618 *man/checkpoint.Rd
+e1170877062ef50e265a0de15bac90e5 *tests/test-all.R
+f449b0ff912a40e7fa5cfd200afa76f7 *tests/testthat/test-0-snapshots.R
+6ff0711b2b854c9eec81dbb6ee4f7460 *tests/testthat/test-1-checkpoint.R
