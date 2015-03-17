@@ -1,116 +1,187 @@
 
-projectScanPackages <- function(project = getwd(), verbose = TRUE){
+projectScanPackages <- function(project = getwd(), verbose = TRUE, use.knitr = FALSE){
   # detect all package dependencies for a project
   dir <- normalizePath(project, winslash='/', mustWork=FALSE)
-  pattern <- "\\.[rR]$|\\.[rR]md$|\\.[rR]nw$|\\.[rR]pres$"
-  R_files <- list.files(dir, pattern = pattern, ignore.case = TRUE, recursive = TRUE)
-
-#   ## ignore anything in the checkpoint directory
-#   R_files <- grep("^checkpoint", R_files, invert = TRUE, value = TRUE)
-
-  pkgs <- unlist(unique(sapply(R_files, deps_by_ext, dir=dir)))
-  as.vector(pkgs)
-
+  pattern <- if(!use.knitr) "\\.[rR]$|\\.[rR]nw$" else
+    "\\.[rR]$|\\.[rR]nw$|\\.[rR]md$|\\.[rR]pres$"
+  
+  ext_r <- c("R", "Rnw")
+  ext_k <- c("Rmd", "Rpres", "Rhmtl") # knitr / rmarkdown extensions
+  
+  makePtn <- function(x)sprintf("\\.(%s)$", paste(c(x, tolower(x)), collapse="|"))
+  
+  files_r <- list.files(dir, pattern = makePtn(ext_r), ignore.case = TRUE, recursive = TRUE)
+  files_k <- list.files(dir, pattern = makePtn(ext_k), ignore.case = TRUE, recursive = TRUE)
+  
+  R_files <- files_r
+  
+  if(length(files_k) > 0) {
+    if(use.knitr) {
+      if(!requireNamespace("knitr")) {
+        warning("The knitr package is not available and Rmarkdown files will not be parsed")
+      } else {
+        R_files <- c(files_r, files_k)
+      }
+    } else {
+      warning("rmarkdown files found and will not be parsed. Set use.knitr = TRUE")
+    }
+  }
+  
+  if(length(R_files) == 0){
+    list(pkgs = character(), error = character())
+  } else {
+    if(interactive()){
+      z <- lapplyProgressBar(R_files, deps_by_ext, dir=dir, verbose=verbose)
+    } else {
+      z <- lapply(R_files, deps_by_ext, dir=dir, verbose=verbose)
+    }
+    
+    pkgs <- sort(unique(do.call(c, lapply(z, "[[", "pkgs"))))
+    error <- sort(unique(do.call(c, lapply(z, "[[", "error"))))
+    error <- gsub(sprintf("%s[//|\\]*", dir), "", error)
+    list(pkgs = pkgs, error = error)
+  }
+  
 }
+
+lapplyProgressBar <- function(X, FUN, ...){
+  env <- environment()
+  N <- length(X)
+  counter <- 0
+  pb <- txtProgressBar(min = 0, max = N, style = 3)
+  on.exit(close(pb))
+  
+  wrapper <- function(...){
+    curVal <- get("counter", envir = env)
+    assign("counter", curVal + 1, envir = env)
+    setTxtProgressBar(get("pb", envir = env), curVal + 1)
+    FUN(...)
+  }
+  lapply(X, wrapper, ...)
+}
+
+getFileExtension <- function(filename)tolower(gsub(".*\\.", "", filename))
 
 
 
 # ad-hoc dispatch based on the file extension
-deps_by_ext <- function(file, dir) {
+deps_by_ext <- function(file, dir, verbose = TRUE) {
   file <- file.path(dir, file)
-  fileext <- tolower(gsub(".*\\.", "", file))
+  fileext <- getFileExtension(file)
   switch(fileext,
-         r = deps.R(file),
-         rmd = deps.Rmd(file),
-         rnw = deps.Rnw(file),
-         rpres = deps.Rpres(file),
-         txt = deps.txt(file),
+         r = deps.R(file, verbose = verbose),
+         rmd = deps.Rmd(file, verbose = verbose),
+         rnw = deps.Rnw(file, verbose = verbose),
+         rpres = deps.Rpres(file, verbose = verbose),
+         txt = deps.txt(file, verbose = verbose),
          stop("Unrecognized file type '", file, "'")
   )
 }
 
-#' @import knitr
 deps.Rmd <- deps.Rpres <- function(file, verbose=TRUE) {
-    tempfile <- tempfile()
-    on.exit(unlink(tempfile))
-    tryCatch(knitr::knit(file, output = tempfile, tangle = TRUE, quiet = TRUE), error = function(e) {
-      mssg(verbose, "Unable to knit file '", file, "'; cannot parse dependencies")
-      character()
-    })
-    deps.R(tempfile)
+  tempfile <- tempfile(fileext = ".Rmd")
+  on.exit(unlink(tempfile))
+  stopifnot(requireNamespace("knitr"))
+  p <- tryCatch(
+    suppressWarnings(suppressMessages(
+      knitr::knit(file, output = tempfile, tangle = TRUE, quiet = TRUE)
+    )), 
+    error = function(e) e
+  )
+  
+  if(inherits(p, "error")) {
+    return(list(pkgs=character(), error=file))
+  }
+  
+  p <- deps.R(tempfile)
+  if(length(p[["error"]]) != 0 ) {
+    p[["error"]] <- file
+  }
+  p
 }
 
 deps.Rnw <- function(file, verbose=TRUE) {
-  tempfile <- tempfile()
+  tempfile <- tempfile(fileext = ".Rnw")
   on.exit(unlink(tempfile))
-  tryCatch(Stangle(file, output = tempfile, quiet = TRUE), error = function(e) {
-    mssg(verbose, "Unable to stangle file '", file, "'; cannot parse dependencies")
-    character()
-  })
-  deps.R(tempfile)
+  p <- tryCatch(
+    suppressWarnings(suppressMessages(
+      Stangle(file, output = tempfile, quiet = TRUE)
+    )), 
+    error = function(e) e
+  )
+  if(inherits(p, "error")) {
+    return(list(pkgs=character(), error=file))
+  }
+  
+  p <- deps.R(tempfile)
+  if(length(p[["error"]]) != 0 ) {
+    p[["error"]] <- file
+  }
+  p
 }
 
 deps.R <- deps.txt <- function(file, verbose=TRUE) {
-
+  
   if (!file.exists(file)) {
     warning("No file at path '", file, "'.")
-    return(character())
+    return(list(pkgs=character(), error=file))
   }
-
+  
   # build a list of package dependencies to return
   pkgs <- character()
-
+  
   # parse file and examine expressions
-  tryCatch({
+  p <- tryCatch({
     exprs <- suppressWarnings(parse(file, n = -1L))
     for (i in seq_along(exprs))
       pkgs <- append(pkgs, expressionDependencies(exprs[[i]]))
-  }, error = function(e) {
-    warning(paste("Failed to parse", file, "; dependencies in this file will",
-                  "not be discovered."))
-  })
-
-  # return packages
-  unique(pkgs)
+  }, error = function(e) e
+  )
+  if(inherits(p, "error")) {
+    list(pkgs=character(), error=file)
+  } else {
+    list(pkgs=unique(pkgs), error=character())
+  }
 }
 
 expressionDependencies <- function(e) {
   # base case
   if (is.atomic(e) || is.name(e)) return()
-
+  
   # recursive case: expression (= list of calls)
   if (is.expression(e)) {
     return(unlist(lapply(e, expressionDependencies)))
   }
-
+  
   # base case: a call
   fname <- as.character(e[[1L]])
   # a refclass method call, so return
-  if (length(fname) > 1) return()
-
+  # if (length(fname) > 1) return()
+  
   if (length(fname) == 1) {
-
+    
     # base case: call to library/require
     if (fname %in% c("library", "require")) {
       mc <- match.call(get(fname, baseenv()), e)
       if (is.null(mc$package)) return(NULL)
       if (isTRUE(mc$character.only)) return(NULL)
-
+      
       return(as.character(mc$package))
     }
-
-    # base case: call to :: or :::
-    if (fname %in% c("::", ":::")) (
-      return(as.character(e[[2L]]))
-    )
-
+    
     # base case: methods functions
     if (fname %in% c("setClass", "setRefClass", "setMethod", "setGeneric")) {
       return("methods")
     }
-
+    
+  } else {
+    
+    # base case: call to :: or :::
+    if (fname[1] %in% c("::", ":::")) (
+      return(as.character(fname[2]))
+    )
   }
-
+  
   # recursive case: all other calls
   children <- lapply(as.list(e[-1]), expressionDependencies)
   unique(unlist(children))
