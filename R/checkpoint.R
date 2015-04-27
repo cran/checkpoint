@@ -22,14 +22,14 @@
 #' @param snapshotDate Date of snapshot to use in \code{YYYY-MM-DD} format,e.g. \code{"2014-09-17"}.  Specify a date on or after \code{"2014-09-17"}.  MRAN takes one snapshot per day.
 #'
 #' @param project A project path.  This is the path to the root of the project that references the packages to be installed from the MRAN snapshot for the date specified for \code{snapshotDate}.  Defaults to current working directory using \code{\link{getwd}()}.
-#' 
+#'
 #' @param R.version Optional character string, e.g. "3.1.2".  If specified, compares the current \code{\link[base]{R.version}} to the specified R.version. If these differ, stops processing with an error, making no changes to the system. Specifically, if the check fails, the library path is NOT modified. This argument allows the original script author to specify a specific version of R to obtain the desired results.
 #'
 #' @param scanForPackages If TRUE, scans for packages in project folder (see details). If FALSE, skips the scanning process.  A use case for \code{scanForPackages = FALSE} is to skip the scanning and installation process, e.g. in production environments with a large number of R scripts in the project.  Only set \code{scanForPackages = FALSE} if you are certain that all package dependencies are already in the checkpoint folder.
-#' 
+#'
 #' @param checkpointLocation File path where the checkpoint library is stored.  Default is \code{"~/"}, i.e. the user's home directory. A use case for changing this is to create a checkpoint library on a portable drive (e.g. USB drive).
-#' 
-#' @param use.knitr If TRUE, uses parses all \code{Rmarkdown} files using the \code{knitr} package.  
+#'
+#' @param use.knitr If TRUE, uses parses all \code{Rmarkdown} files using the \code{knitr} package.
 #'
 #' @param verbose If TRUE, displays progress messages.
 #'
@@ -44,12 +44,12 @@
 
 checkpoint <- function(snapshotDate, project = getwd(), R.version, scanForPackages = TRUE,
                        checkpointLocation = "~/",
-                       verbose=TRUE, 
+                       verbose=TRUE,
                        use.knitr = system.file(package="knitr") != "") {
-
+  
   if(!missing("R.version") && !is.null(R.version)){
     if(!correctR(as.character(R.version))){
-      message <- sprintf("Specified R.version %s does not match current R (%s)", 
+      message <- sprintf("Specified R.version %s does not match current R (%s)",
                          R.version, utils::packageVersion("base"))
       mssg(verbose, message)
       mssg(verbose, "Terminating checkpoint")
@@ -58,6 +58,8 @@ checkpoint <- function(snapshotDate, project = getwd(), R.version, scanForPackag
     }
   }
   
+  checkpointLocation = authorizeFileSystemUse(checkpointLocation)
+  
   fixRstudioBug()
   
   if(!createFolders(snapshotDate = snapshotDate, checkpointLocation = checkpointLocation))
@@ -65,18 +67,16 @@ checkpoint <- function(snapshotDate, project = getwd(), R.version, scanForPackag
   
   
   snapshoturl <- getSnapshotUrl(snapshotDate=snapshotDate)
-
-
+  
+  
   compiler.path <- system.file(package = "compiler", lib.loc = .Library[1])
-  # set repos
-  setMranMirror(snapshotUrl = snapshoturl)
-
+  
   libPath <- checkpointPath(snapshotDate, type = "lib", checkpointLocation = checkpointLocation)
-  installMissingBasePackages()
+  installMissingBasePackages(checkpointLocation = checkpointLocation)
   
   # Set lib path
-  setLibPaths(libPath = libPath)
-    
+  setLibPaths(checkpointLocation = checkpointLocation, libPath = libPath)
+  
   # Scan for packages used
   exclude.packages = c("checkpoint", # this very package
                        c("base", "compiler", "datasets", "graphics", "grDevices", "grid",
@@ -104,7 +104,7 @@ checkpoint <- function(snapshotDate, project = getwd(), R.version, scanForPackag
   
   
   packages.to.install <- setdiff(packages.detected, c(packages.installed, exclude.packages))
-
+  
   # detach checkpointed pkgs already loaded
   
   packages.in.search <- findInSearchPath(packages.to.install)
@@ -113,6 +113,8 @@ checkpoint <- function(snapshotDate, project = getwd(), R.version, scanForPackag
   # check if packages are available in snapshot
   
   if(length(packages.to.install) > 0) {
+    # set repos
+    setMranMirror(snapshotUrl = snapshoturl)
     not.available <- !packages.to.install %in% available.packages()[, "Package"]
     if(sum(not.available > 0)){
       mssg(verbose, "Packages not available in repository and won't be installed:")
@@ -124,7 +126,7 @@ checkpoint <- function(snapshotDate, project = getwd(), R.version, scanForPackag
   }
   
   # install missing packages
-
+  
   if(length(packages.to.install) > 0) {
     mssg(verbose, "Installing packages used in this project ")
     for(pkg in packages.to.install){
@@ -159,30 +161,40 @@ checkpoint <- function(snapshotDate, project = getwd(), R.version, scanForPackag
   )
   invisible(z)}
 
+
+#  ------------------------------------------------------------------------
+
+
 setMranMirror <- function(snapshotDate, snapshotUrl = checkpoint:::getSnapShotUrl(snapshotDate)){
   options(repos = snapshotUrl)}
 
-setLibPaths <- function(snapshotDate, libPath=checkpointPath(snapshotDate, type = "lib")){
-    assign(".lib.loc", c(libPath, checkpointBasePkgs()), envir = environment(.libPaths))}
+setLibPaths <- function(checkpointLocation, libPath){
+  assign(".lib.loc", c(libPath, checkpointBasePkgs(checkpointLocation)), envir = environment(.libPaths))}
 
 mranUrl <- function()"http://mran.revolutionanalytics.com/snapshot/"
 
 getSnapshotUrl <- function(snapshotDate, url = mranUrl()){
   mran.root = url(url)
+  snapshot.url = paste(gsub("/$", "", url), snapshotDate, sep = "/")
   on.exit(close(mran.root))
   tryCatch(
     suppressWarnings(readLines(mran.root)),
     error =
       function(e) {
-        stop(sprintf("Unable to reach MRAN: %s", e$message))})
-  snapshot.url = paste(gsub("/$", "", url), snapshotDate, sep = "/")
+        warning(sprintf("Unable to reach MRAN: %s", e$message))
+        return(snapshot.url)
+      }
+  )
   con = url(snapshot.url)
   on.exit(close(con), add = TRUE)
   tryCatch(
     suppressWarnings(readLines(con)),
     error =
       function(e) {
-        stop("Unable to find snapshot on MRAN")})
+        warning("Unable to find snapshot on MRAN")
+        return(snapshot.url)
+      }
+  )
   snapshot.url}
 
 
