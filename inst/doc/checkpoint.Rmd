@@ -23,7 +23,7 @@ RRT is a collection of R packages and the checkpoint server that together make y
 
 ### The checkpoint server
 
-To achieve reproducibility, daily snapshots of CRAN are stored on our checkpoint server. At midnight UTC each day, our [mirror](http://cran.revolutionanalytics.com/) of Austria CRAN is refreshed. When the rsync process is complete, the checkpoint server takes and stores a snapshot of the CRAN mirror as it was at that very moment. These daily snapshots can then be accessed on the [MRAN website](http://mran.revolutionanalytics.com/snapshot) or using the `checkpoint` package, which installs and consistently use these packages just as they existed at midnight UTC on a specified snapshot date. Daily snapshots are available as far back as `2014-09-17`. For more information, visit the [checkpoint server GitHub site](https://github.com/RevolutionAnalytics/checkpoint-server).
+To achieve reproducibility, daily snapshots of CRAN are stored on our checkpoint server. At midnight UTC each day, our [mirror](http://cran.revolutionanalytics.com/) of Austria CRAN is refreshed. When the rsync process is complete, the checkpoint server takes and stores a snapshot of the CRAN mirror as it was at that very moment. These daily snapshots can then be accessed on the [MRAN website](http://mran.microsoft.com/snapshot) or using the `checkpoint` package, which installs and consistently use these packages just as they existed at midnight UTC on a specified snapshot date. Daily snapshots are available as far back as `2014-09-17`. For more information, visit the [checkpoint server GitHub site](https://github.com/RevolutionAnalytics/checkpoint-server).
 
 ![checkpoint server](checkpoint-server.png)
 
@@ -79,7 +79,7 @@ To create a checkpoint project, you do:
 
     ```{r, eval=FALSE}
     library(checkpoint)
-    checkpoint("2014-12-01")
+    checkpoint("2015-04-26", checkpointLocation = tempdir())
     ```
 
 4. Run the script.
@@ -90,7 +90,7 @@ For example, your script may look like this:
 
 ```{r, eval=FALSE}
 library(checkpoint)
-checkpoint("2014-12-01")
+checkpoint("2015-04-26", checkpointLocation = tempdir())
 
 library(MASS)
 hist(islands)
@@ -110,9 +110,7 @@ Next you want to run the script.  Here is what `checkpoint` does:
 example_project <- tempdir()
 
 dir.create(example_project, recursive = TRUE)
-unlink("~/.checkpoint/2014-12-01", recursive=TRUE)
-oldwd <- getwd()
-setwd(example_project)
+unlink("~/.checkpoint/2015-04-26", recursive=TRUE)
 oldRepos <- getOption("repos")
 oldLibPaths <- .libPaths()
 
@@ -121,23 +119,23 @@ oldLibPaths <- .libPaths()
 
 example_code <- '
 library(checkpoint)
-checkpoint("2014-12-01")
+checkpoint("2015-04-26", checkpointLocation = tempdir())
 
 library(MASS)
 hist(islands)
 truehist(islands)
 '
 
-cat(example_code, file="checkpoint_example_code.R")
+cat(example_code, file = file.path(example_project, "checkpoint_example_code.R"))
 
 ```
 
 ```{r checkpoint}
 ## Create a checkpoint by specifying a snapshot date
 
-setwd(example_project)
 library(checkpoint)
-checkpoint("2014-12-01")
+dir.create(file.path(tempdir(), ".checkpoint"))
+checkpoint("2015-04-26", project = example_project, checkpointLocation = tempdir())
 ```
 
 ### Inspecting the results
@@ -169,7 +167,6 @@ installed.packages()[, "Package"]
 ```{r cleanup, include=FALSE}
 ## cleanup
 
-setwd(oldwd)
 unlink(example_project, recursive = TRUE)
 options(repos = oldRepos)
 .libPaths(oldLibPaths)
