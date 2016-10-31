@@ -21,11 +21,20 @@
 #' 
 #' @section Changing the default MRAN url:
 #' 
-#' \code{checkpoint} uses https by default to download packages (see \url{https://www.r-consortium.org/news/blogs/2015/08/best-practices-using-r-securely}).
+#' \code{checkpoint} uses https by default to download packages (see \url{https://www.r-consortium.org/blog/2015/08/17/best-practices-for-using-r-securely}).
 #' \code{checkpoint} Defaults to \url{https://mran.microsoft.com/snapshot} by default in R versions 3.2.0 and later, if https support is enabled.
 #' 
 #' You can modify the default URL. To change the URL, use \code{options(checkpoint.mranUrl = ...)}
 #' 
+#' @section Log file:
+#' 
+#' As a side effect, the \code{checkpoint} function writes a log file with information about the downloaded files, in particular the package downloaded and the associated file size in bytes. The log is stored at the root of the \code{checkpointLocation}. For example, if \code{checkpointLocation} is the user home folder (the default) then the log file is at \code{~/.checkpoint/checkpoint_log.csv}. This file contains columns for:
+#' \itemize{
+#' \item{\code{timestamp}}
+#' \item{\code{snapshotDate}}
+#' \item{\code{pkg}}
+#' \item{\code{bytes}}
+#' }
 #'
 #' @param snapshotDate Date of snapshot to use in \code{YYYY-MM-DD} format,e.g. \code{"2014-09-17"}.  Specify a date on or after \code{"2014-09-17"}.  MRAN takes one snapshot per day.
 #'
@@ -44,7 +53,11 @@
 #' @param scan.rnw.with.knitr If TRUE, uses \code{\link[knitr]{knit}} to parse \code{.Rnw} files, otherwise use \code{\link[utils]{Sweave}}
 #'
 #' @param verbose If TRUE, displays progress messages.
+#' 
+#' @param forceInstall If TRUE, forces the re-installation of all discovered packages and their dependencies. This is useful if, for some reason, the checkpoint archive becomes corrupted.
 #'
+#' @param forceProject If TRUE, forces the checkpoint process, even if the provided project folder doesn't look like an R project. A commonly reported user problem is that they accidentally trigger the checkpoint process from their home folder, resulting in scanning many R files and downloading many packages. To prevent this, we use a heuristic to determine if the project folder looks like an R project. If the project folder is the home folder, and also contains no R files, then \code{checkpoint()} asks for confirmation to continue.
+
 #'
 #' @return Checkpoint is called for its side-effects (see the details section), but invisibly returns a list with elements:
 #' \itemize{
@@ -53,6 +66,7 @@
 #' \item{pkgs_not_on_mran}
 #' \item{pkgs_installed}
 #' }
+#' 
 #'
 #' @export
 #'
@@ -65,7 +79,11 @@ checkpoint <- function(snapshotDate, project = getwd(), R.version, scanForPackag
                        verbose=TRUE,
                        use.knitr = system.file(package="knitr") != "", 
                        auto.install.knitr = TRUE,
-                       scan.rnw.with.knitr = FALSE) {
+                       scan.rnw.with.knitr = FALSE,
+                       forceInstall = FALSE, 
+                       forceProject = FALSE) {
+  
+  if(interactive()) validateProjectFolder(project)
   
   stopIfInvalidDate(snapshotDate)
   
@@ -83,7 +101,7 @@ checkpoint <- function(snapshotDate, project = getwd(), R.version, scanForPackag
   checkpointLocation = authorizeFileSystemUse(checkpointLocation)
   
   fixRstudioBug()
-
+  
   if(!createFolders(snapshotDate = snapshotDate, checkpointLocation = checkpointLocation))
     stop("Unable to create checkpoint folders at checkpointLocation = \"", checkpointLocation, "\"")
   
@@ -125,8 +143,20 @@ checkpoint <- function(snapshotDate, project = getwd(), R.version, scanForPackag
     files.not.parsed <- character(0)
   }
   
-  
-  packages.to.install <- setdiff(packages.detected, c(packages.installed, exclude.packages))
+  if(forceInstall && packages.detected > 0){
+    to_remove <- as.vector(unlist(tools::package_dependencies(packages.detected)))
+    to_remove <- c(packages.detected, to_remove)
+    tryCatch(
+      suppressMessages(suppressWarnings(
+        utils::remove.packages(to_remove)
+      )),
+      error = function(e)e
+    )
+    packages.to.install <- packages.detected
+    packages.installed <- character(0)
+  } else {
+    packages.to.install <- setdiff(packages.detected, c(packages.installed, exclude.packages))
+  }
   
   # detach checkpointed pkgs already loaded
   
@@ -158,11 +188,22 @@ checkpoint <- function(snapshotDate, project = getwd(), R.version, scanForPackag
         mssg(verbose, " - Previously installed ", sQuote(pkg))
       } else {
         mssg(verbose, " - Installing ", sQuote(pkg))
-        suppressWarnings(
-          utils::install.packages(pkgs = pkg, verbose = FALSE, quiet = TRUE,
-                                  INSTALL_opts = "--no-lock")
+        download_messages <- capture.output({ 
+          suppressWarnings(
+            utils::install.packages(pkgs = pkg, verbose = FALSE, quiet = FALSE,
+                                    INSTALL_opts = "--no-lock")
+          )
+        }, type = "message")
+        checkpoint_log(
+          download_messages,
+          snapshotDate = snapshotDate,
+          pkg,
+          file = file.path(
+            checkpointPath(snapshotDate, checkpointLocation, type = "root"),
+            "checkpoint_log.csv")
         )
       }
+      
     }
   } else if(length(packages.detected > 0)){
     mssg(verbose, "All detected packages already installed")
@@ -204,3 +245,28 @@ mssg <- function(x, ...) if(x) message(...)
 
 correctR <- function(x) compareVersion(as.character(utils::packageVersion("base")), x) == 0
 
+
+# Scans for R files in a folder and the first level subfolders.
+#
+anyRfiles <- function(path = "."){
+  findRfiles <- function(path = "."){
+    pattern <- "\\.[rR]$|\\.[rR]nw$|\\.[rR]md$|\\.[rR]pres$|\\.[rR]proj$"
+    z <- list.files(path = path, pattern = pattern, full.names = TRUE)
+    normalizePath(z, winslash = "/")
+  }
+  dirs <- list.dirs(path = path, recursive = FALSE)
+  rfiles <- as.vector(unlist(sapply(dirs, findRfiles)))
+  length(rfiles) > 0
+}
+
+validateProjectFolder <- function(project) {
+  if(normalizePath(project) == normalizePath("~/") && !anyRfiles(project)){
+    message("This doesn't look like an R project directory.\n", 
+                 "Use forceProject = TRUE to force scanning"
+    )
+    answer = readline("Continue (y/n)? ")
+    if(tolower(answer) != "y"){
+      stop("Scanning stopped.", call. = FALSE)
+    }
+  }
+}

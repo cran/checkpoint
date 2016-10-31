@@ -3,8 +3,6 @@ if(interactive()) library(testthat)
 
 Sys.setenv("R_TESTS" = "") # Configure Travis for tests https://github.com/RevolutionAnalytics/checkpoint/issues/139
 
-# MRAN.start = as.Date("2014-09-17")
-
 current.R <- local({ x = getRversion(); paste(x$major, x$minor, sep=".")})
 
 test.start <- switch(current.R,
@@ -16,10 +14,10 @@ test.start <- switch(current.R,
 
 MRAN.default = test.start[1]
 
-packages.to.test.base = c("MASS", "plyr", "httr", "XML", "checkpoint", "stats", "stats4", "compiler")
-packages.to.test.base = c("MASS", "chron", "checkpoint", "stats", "stats4", "compiler")
-packages.to.test.knitr = c("foreach")
-checkpointLocation = dirname(tempdir())
+packages.to.test.base <- c("MASS", "plyr", "httr", "XML", "checkpoint", "stats", "stats4", "compiler")
+packages.to.test.base <- c("MASS", "chron", "checkpoint", "stats", "stats4", "compiler")
+packages.to.test.knitr <- c("foreach")
+checkpointLocation <- tempdir()
 dir.create(file.path(checkpointLocation, ".checkpoint"), showWarnings = FALSE)
 
 
@@ -87,9 +85,9 @@ test_checkpoint <- function(https = FALSE, snap.dates){
         it("does not display message whan scanForPackages=FALSE", {
           expect_false(
             isTRUE(
-              shows_message("Scanning for packages used in this project")(
-                checkpoint(snap_date, checkpointLocation = checkpointLocation, 
-                           project = project_root, scanForPackages=FALSE)
+              shows_message("Scanning for packages used in this project",
+                            checkpoint(snap_date, checkpointLocation = checkpointLocation,
+                                       project = project_root, scanForPackages=FALSE)
               )
             ))
         })
@@ -132,7 +130,7 @@ test_checkpoint <- function(https = FALSE, snap.dates){
           )
           
         })
-
+        
         it("uses correct MRAN url", {
           expect_equal(
             getOption("repos"),
@@ -146,8 +144,19 @@ test_checkpoint <- function(https = FALSE, snap.dates){
             normalizePath(.libPaths()[1], winslash = "/")
           )
         })
+        
+        it("writes log file in csv format", {
+          logfile <- file.path(checkpointLocation, ".checkpoint/checkpoint_log.csv")
+          expect_true(file.exists(logfile))
+          logdata <- read.csv(logfile, nrows = 5)
+          expect_is(logdata, "data.frame")
+          expect_length(names(logdata), 4)
+        })
+        
       })
+      
     })
+    
     
     # cleanup
     cleanCheckpointFolder(snap_date, checkpointLocation = checkpointLocation)
