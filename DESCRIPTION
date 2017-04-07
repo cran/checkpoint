@@ -11,25 +11,24 @@ Description: The goal of checkpoint is to solve the problem of package
     later and may have altered your results. In this way, anyone using checkpoint's
     checkpoint() can ensure the reproducibility of your scripts or projects at any
     time. To create the snapshot archives, once a day (at midnight UTC) Microsoft
-    refreshes the Austria CRAN mirror, on the "Microsoft R Archived Network"
+    refreshes the Austria CRAN mirror on the "Microsoft R Archived Network"
     server (<https://mran.microsoft.com/>). Immediately after completion
     of the rsync mirror process, the process takes a snapshot, thus creating the
     archive. Snapshot archives exist starting from 2014-09-17.
-Version: 0.3.18
-Date: 2016-10-31
+Version: 0.3.22
+Date: 2017-04-07
 Author: Microsoft Corporation
 Maintainer: Andrie de Vries <adevries@microsoft.com>
 Copyright: Microsoft
 License: GPL-2
 URL: https://github.com/RevolutionAnalytics/checkpoint
-BugReports:
-        https://www.github.com/RevolutionAnalytics/checkpoint/issues
+BugReports: https://www.github.com/RevolutionAnalytics/checkpoint/issues
 Imports: utils
 Depends: R(>= 3.0.0)
-Suggests: knitr, testthat(>= 0.9), MASS
+Suggests: knitr, rmarkdown, testthat(>= 0.9), MASS, covr
 VignetteBuilder: knitr
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1
 NeedsCompilation: no
-Packaged: 2016-10-31 10:44:52 UTC; adevries
+Packaged: 2017-04-07 14:09:33 UTC; adevries
 Repository: CRAN
-Date/Publication: 2016-10-31 16:53:49
+Date/Publication: 2017-04-07 17:01:21 UTC

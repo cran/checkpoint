@@ -1,6 +1,10 @@
+knitr.is.installed <- function()length(find.package(package="knitr", quiet = TRUE)) > 0
 
-projectScanPackages <- function(project = getwd(), verbose = TRUE, use.knitr = FALSE, 
-                                auto.install.knitr = FALSE, scan.rnw.with.knitr = FALSE){
+
+projectScanPackages <- function(project = getwd(), verbose = TRUE, 
+                                use.knitr = FALSE, 
+                                auto.install.knitr = FALSE, 
+                                scan.rnw.with.knitr = FALSE){
   # detect all package dependencies for a project
   dir <- normalizePath(project, winslash='/', mustWork=FALSE)
   pattern <- if(!use.knitr) "\\.[rR]$|\\.[rR]nw$" else
@@ -16,20 +20,22 @@ projectScanPackages <- function(project = getwd(), verbose = TRUE, use.knitr = F
   
   makePtn <- function(x)sprintf("\\.(%s)$", paste(c(x, tolower(x)), collapse="|"))
   
-  files_r <- list.files(dir, pattern = makePtn(ext_r), ignore.case = TRUE, recursive = TRUE)
-  files_k <- list.files(dir, pattern = makePtn(ext_k), ignore.case = TRUE, recursive = TRUE)
+  files_r <- list.files(dir, pattern = makePtn(ext_r), 
+                        ignore.case = TRUE, recursive = TRUE)
+  files_k <- list.files(dir, pattern = makePtn(ext_k), 
+                        ignore.case = TRUE, recursive = TRUE)
   
   R_files <- files_r
   
   if(length(files_k) > 0) {
     if(use.knitr) {
-      if(!requireNamespace("knitr")) {
-        warning("The knitr package is not available and Rmarkdown files will not be parsed")
+      if(!knitr.is.installed()) {
+        mssg(verbose, "The knitr package is not available and Rmarkdown files will not be parsed")
       } else {
         R_files <- c(files_r, files_k)
       }
     } else {
-      warning("rmarkdown files found and will not be parsed. Set use.knitr = TRUE")
+      mssg(verbose, "rmarkdown files found and will not be parsed. Set use.knitr = TRUE")
     }
   }
   
@@ -37,13 +43,18 @@ projectScanPackages <- function(project = getwd(), verbose = TRUE, use.knitr = F
     list(pkgs = character(), error = character())
   } else {
     if(interactive()){
-      z <- lapplyProgressBar(R_files, deps_by_ext, dir=dir, verbose=verbose, scan.rnw.with.knitr = scan.rnw.with.knitr)
+      z <- lapplyProgressBar(R_files, deps_by_ext, dir=dir, verbose=verbose,
+                             scan.rnw.with.knitr = scan.rnw.with.knitr)
     } else {
-      z <- lapply(R_files, deps_by_ext, dir=dir, verbose=verbose, scan.rnw.with.knitr = scan.rnw.with.knitr)
+      z <- lapply(R_files, deps_by_ext, dir=dir, verbose=verbose, 
+                  scan.rnw.with.knitr = scan.rnw.with.knitr)
     }
     
     pkgs <- sort(unique(do.call(c, lapply(z, "[[", "pkgs"))))
-    if(length(files_k) > 0 && auto.install.knitr) pkgs <- unique(c(pkgs, "knitr", "rmarkdown"))
+    if(length(files_k) > 0 && auto.install.knitr) {
+      pkgs <- unique(c(pkgs, "knitr"))
+      # if(getRversion() >= "3.3.3") pkgs <- unique(c(pkgs, "rmarkdown"))
+    }
     error <- sort(unique(do.call(c, lapply(z, "[[", "error"))))
     error <- gsub(sprintf("%s[//|\\]*", dir), "", error)
     list(pkgs = pkgs, error = error)
@@ -51,20 +62,25 @@ projectScanPackages <- function(project = getwd(), verbose = TRUE, use.knitr = F
   
 }
 
+
 lapplyProgressBar <- function(X, FUN, ...){
-  env <- environment()
-  N <- length(X)
-  counter <- 0
-  pb <- txtProgressBar(min = 0, max = N, style = 3)
-  on.exit(close(pb))
-  
-  wrapper <- function(...){
-    curVal <- get("counter", envir = env)
-    assign("counter", curVal + 1, envir = env)
-    setTxtProgressBar(get("pb", envir = env), curVal + 1)
-    FUN(...)
+  if(interactive()){
+    env <- environment()
+    N <- length(X)
+    counter <- 0
+    pb <- txtProgressBar(min = 0, max = N, style = 3)
+    on.exit(close(pb))
+    
+    wrapper <- function(...){
+      curVal <- get("counter", envir = env)
+      assign("counter", curVal + 1, envir = env)
+      setTxtProgressBar(get("pb", envir = env), curVal + 1)
+      FUN(...)
+    }
+    lapply(X, wrapper, ...)
+  } else {
+    lapply(X, FUN, ...)
   }
-  lapply(X, wrapper, ...)
 }
 
 getFileExtension <- function(filename)tolower(gsub(".*\\.", "", filename))
@@ -94,7 +110,7 @@ deps.Rmd <- deps.Rpres <- function(file, verbose=TRUE) {
   showErrors <- getOption("show.error.messages")
   options("show.error.messages" = FALSE)
   on.exit({unlink(tempfile); options("show.error.messages" = showErrors)})
-  stopifnot(requireNamespace("knitr"))
+  if(!knitr.is.installed()) stop("knitr is not installed")
   p <- try(
     suppressWarnings(
       knitr::knit(file, output = tempfile, tangle = TRUE, quiet = TRUE)
@@ -135,7 +151,7 @@ deps.Rnw <- function(file, verbose=TRUE) {
 
 deps.R <- deps.txt <- function(file, verbose=TRUE) {
   if (!file.exists(file)) {
-    warning("No file at path '", file, "'.")
+    mssg(verbose, "No file at path '", file, "'.")
     return(list(pkgs=character(), error=file))
   }
   

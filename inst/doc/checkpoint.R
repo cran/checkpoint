@@ -2,7 +2,7 @@
 #  library(checkpoint)
 #  checkpoint("2015-04-26", checkpointLocation = tempdir())
 
-## ---- eval=FALSE---------------------------------------------------------
+## ---- eval=FALSE, warning=FALSE------------------------------------------
 #  library(checkpoint)
 #  checkpoint("2015-04-26", checkpointLocation = tempdir())
 #  
@@ -16,8 +16,7 @@
 
 example_project <- tempdir()
 
-dir.create(example_project, recursive = TRUE)
-unlink("~/.checkpoint/2015-04-26", recursive=TRUE)
+dir.create(example_project, recursive = TRUE, showWarnings = FALSE)
 oldRepos <- getOption("repos")
 oldLibPaths <- .libPaths()
 
@@ -36,11 +35,11 @@ truehist(islands)
 cat(example_code, file = file.path(example_project, "checkpoint_example_code.R"))
 
 
-## ----checkpoint----------------------------------------------------------
+## ----checkpoint, warning=FALSE-------------------------------------------
 ## Create a checkpoint by specifying a snapshot date
 
 library(checkpoint)
-dir.create(file.path(tempdir(), ".checkpoint"))
+dir.create(file.path(tempdir(), ".checkpoint"), recursive = TRUE)
 checkpoint("2015-04-26", project = example_project, checkpointLocation = tempdir())
 
 ## ----inspect-1-----------------------------------------------------------
@@ -56,6 +55,8 @@ installed.packages()[, "Package"]
 ## cleanup
 
 unlink(example_project, recursive = TRUE)
+unlink(file.path(tempdir(), "checkpoint_example_code.R"))
+unlink(file.path(tempdir(), ".checkpoint"), recursive = TRUE)
 options(repos = oldRepos)
-.libPaths(oldLibPaths)
+unCheckpoint(oldLibPaths)
 
