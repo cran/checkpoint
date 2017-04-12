@@ -1,21 +1,15 @@
-## ---- eval=FALSE---------------------------------------------------------
-#  library(MASS)
-#  hist(islands)
-#  truehist(islands)
-
 ## ----setup-1, include=FALSE----------------------------------------------
 ## Write dummy code file to project
 example_code <- '
 library(MASS)
-library(chron)
 '
 dir.create(tempdir(), recursive = TRUE)
 cat(example_code, file = file.path(tempdir(), "managing_checkpoint_example_code.R"))
 
 ## ----checkpoint, results="hide", message=FALSE, warning=FALSE------------
+dir.create(file.path(tempdir(), ".checkpoint"), recursive = TRUE, showWarnings = FALSE)
 ## Create a checkpoint by specifying a snapshot date
 library(checkpoint)
-dir.create(file.path(tempdir(), ".checkpoint"), recursive = TRUE, showWarnings = FALSE)
 checkpoint("2015-04-26", project = tempdir(), checkpointLocation = tempdir())
 
 

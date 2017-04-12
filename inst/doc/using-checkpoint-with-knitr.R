@@ -1,8 +1,3 @@
-## ---- eval = FALSE-------------------------------------------------------
-#  # demo script
-#  library(MASS)
-#  hist(islands)
-
 ## ---- echo=FALSE, comment=""---------------------------------------------
 cat("```{r, include=FALSE}", '
 # write a manifest to local folder

@@ -4,7 +4,7 @@
 
 <head>
 
-<meta charset="utf-8" />
+<meta charset="utf-8">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
@@ -12,7 +12,7 @@
 
 <meta name="author" content="Andrie de Vries" />
 
-<meta name="date" content="2017-04-07" />
+<meta name="date" content="2017-04-12" />
 
 <title>Using checkpoint in a markdown document</title>
 
@@ -70,25 +70,35 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Using checkpoint in a markdown document</h1>
 <h4 class="author"><em>Andrie de Vries</em></h4>
-<h4 class="date"><em>2017-04-07</em></h4>
+<h4 class="date"><em>2017-04-12</em></h4>
 
 
+<div id="TOC">
+<ul>
+<li><a href="#introduction"><span class="toc-section-number">1</span> Introduction</a></li>
+<li><a href="#example"><span class="toc-section-number">2</span> Example</a></li>
+<li><a href="#the-checkpoint-solution"><span class="toc-section-number">3</span> The checkpoint solution</a></li>
+<li><a href="#check-that-this-works"><span class="toc-section-number">4</span> Check that this works</a></li>
+<li><a href="#your-real-r-code"><span class="toc-section-number">5</span> Your real R code:</a></li>
+<li><a href="#conclusion"><span class="toc-section-number">6</span> Conclusion</a></li>
+</ul>
+</div>
 
 <div id="introduction" class="section level1">
-<h1>Introduction</h1>
+<h1><span class="header-section-number">1</span> Introduction</h1>
 <p>Sometimes you want to use create a report using <code>markdown</code>, and you want to <code>checkpoint</code> the code in this document.</p>
 <p>However, running this as part of a <code>RMarkdown</code> process is problematic, since the knitting process runs inside a temporary folder that is different from the current working directory.</p>
 <p>To resolve this, I propose a hacky solution: create a “manifest” file in the same folder that contains all of the <code>library()</code> calls.</p>
 </div>
 <div id="example" class="section level1">
-<h1>Example</h1>
+<h1><span class="header-section-number">2</span> Example</h1>
 <p>Imagine you have a small script that you want to put in an Rmarkdown document with a checkpoint.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># demo script</span>
 <span class="kw">library</span>(MASS)
 <span class="kw">hist</span>(islands)</code></pre></div>
 </div>
 <div id="the-checkpoint-solution" class="section level1">
-<h1>The checkpoint solution</h1>
+<h1><span class="header-section-number">3</span> The checkpoint solution</h1>
 <p>The only way I’ve found to get <code>checkpoint()</code> to work inside an RMardown document, is really a bit of a hack. The workaround is to create a manifest of required packages, and write this to an R file in the working directory.</p>
 <p>For example, imagine your R script uses the <code>MASS</code> package, then create a manifest file like this:</p>
 <pre><code>```{r, include=FALSE}
@@ -112,7 +122,7 @@ checkpoint(&quot;2017-03-28&quot;, checkpointLocation = td)
 ```</code></pre>
 </div>
 <div id="check-that-this-works" class="section level1">
-<h1>Check that this works</h1>
+<h1><span class="header-section-number">4</span> Check that this works</h1>
 <p>Now you are ready to put these instructions in an actual code block to see what happens.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># write a manifest to local folder</span>
 <span class="kw">cat</span>(<span class="st">'</span>
@@ -127,28 +137,9 @@ checkpoint(&quot;2017-03-28&quot;, checkpointLocation = td)
 <span class="kw">library</span>(checkpoint)
 <span class="kw">checkpoint</span>(<span class="st">&quot;2017-03-28&quot;</span>, <span class="dt">checkpointLocation =</span> <span class="kw">tempdir</span>())</code></pre></div>
 <pre><code>## Scanning for packages used in this project</code></pre>
-<pre><code>## 
-  |                                                                       
-  |                                                                 |   0%
-  |                                                                       
-  |=========                                                        |  14%
-  |                                                                       
-  |===================                                              |  29%
-  |                                                                       
-  |============================                                     |  43%
-  |                                                                       
-  |=====================================                            |  57%
-  |                                                                       
-  |==============================================                   |  71%</code></pre>
-<pre><code>## No file at path 'C:\Users\adevries\AppData\Local\Temp\RtmpAbBU8M\file22d44c636940.Rmd'.</code></pre>
-<pre><code>## 
-  |                                                                       
-  |========================================================         |  86%</code></pre>
-<pre><code>## No file at path 'C:\Users\adevries\AppData\Local\Temp\RtmpAbBU8M\file22d472c1453.Rmd'.</code></pre>
-<pre><code>## 
-  |                                                                       
-  |=================================================================| 100%</code></pre>
-<pre><code>## No file at path 'C:\Users\adevries\AppData\Local\Temp\RtmpAbBU8M\file22d4389e3298.Rmd'.</code></pre>
+<pre><code>## No file at path 'C:\Users\adevries\AppData\Local\Temp\RtmpSWqA0D\file589c640e42a3.Rmd'.</code></pre>
+<pre><code>## No file at path 'C:\Users\adevries\AppData\Local\Temp\RtmpSWqA0D\file589c5e3f2228.Rmd'.</code></pre>
+<pre><code>## No file at path 'C:\Users\adevries\AppData\Local\Temp\RtmpSWqA0D\file589c394a6e76.Rmd'.</code></pre>
 <pre><code>## - Discovered 3 packages</code></pre>
 <pre><code>## Unable to parse 3 files:</code></pre>
 <pre><code>## - checkpoint.Rmd</code></pre>
@@ -157,7 +148,9 @@ checkpoint(&quot;2017-03-28&quot;, checkpointLocation = td)
 <pre><code>## Installing packages used in this project</code></pre>
 <pre><code>##  - Installing 'MASS'</code></pre>
 <pre><code>## MASS</code></pre>
-<pre><code>##  - Previously installed 'knitr'</code></pre>
+<pre><code>##  - Installing 'knitr'</code></pre>
+<pre><code>## knitr</code></pre>
+<pre><code>## also installing the dependencies 'mime', 'stringi', 'magrittr', 'evaluate', 'digest', 'highr', 'markdown', 'stringr', 'yaml'</code></pre>
 <pre><code>## checkpoint process complete</code></pre>
 <pre><code>## ---</code></pre>
 <p>If this worked, you should see that the library path now points to <code>tempdir()</code> and that MASS should be one of only a few package installed:</p>
@@ -165,18 +158,34 @@ checkpoint(&quot;2017-03-28&quot;, checkpointLocation = td)
 ## [1] &quot;.../Temp/RtmpIVB6bI/.checkpoint/2017-03-28/lib/x86_64-w64-mingw32/3.3.2&quot;
 ## [2] &quot;.../Temp/RtmpIVB6bI/.checkpoint/R-3.3.2&quot;</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">installed.packages</span>()[, <span class="st">&quot;Package&quot;</span>]</code></pre></div>
-<pre><code>##       MASS   compiler 
-##     &quot;MASS&quot; &quot;compiler&quot;</code></pre>
+<pre><code>##         MASS       digest     evaluate        highr        knitr 
+##       &quot;MASS&quot;     &quot;digest&quot;   &quot;evaluate&quot;      &quot;highr&quot;      &quot;knitr&quot; 
+##     magrittr     markdown         mime      stringi      stringr 
+##   &quot;magrittr&quot;   &quot;markdown&quot;       &quot;mime&quot;    &quot;stringi&quot;    &quot;stringr&quot; 
+##         yaml     compiler   KernSmooth         MASS       Matrix 
+##       &quot;yaml&quot;   &quot;compiler&quot; &quot;KernSmooth&quot;       &quot;MASS&quot;     &quot;Matrix&quot; 
+##         base         boot        class      cluster    codetools 
+##       &quot;base&quot;       &quot;boot&quot;      &quot;class&quot;    &quot;cluster&quot;  &quot;codetools&quot; 
+##     compiler     datasets      foreign    grDevices     graphics 
+##   &quot;compiler&quot;   &quot;datasets&quot;    &quot;foreign&quot;  &quot;grDevices&quot;   &quot;graphics&quot; 
+##         grid      lattice      methods         mgcv         nlme 
+##       &quot;grid&quot;    &quot;lattice&quot;    &quot;methods&quot;       &quot;mgcv&quot;       &quot;nlme&quot; 
+##         nnet     parallel        rpart      spatial      splines 
+##       &quot;nnet&quot;   &quot;parallel&quot;      &quot;rpart&quot;    &quot;spatial&quot;    &quot;splines&quot; 
+##        stats       stats4     survival        tcltk        tools 
+##      &quot;stats&quot;     &quot;stats4&quot;   &quot;survival&quot;      &quot;tcltk&quot;      &quot;tools&quot; 
+##        utils 
+##      &quot;utils&quot;</code></pre>
 </div>
 <div id="your-real-r-code" class="section level1">
-<h1>Your real R code:</h1>
+<h1><span class="header-section-number">5</span> Your real R code:</h1>
 <p>Now your real R code follows, and it creates the plot, as expected:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(MASS)
 <span class="kw">hist</span>(islands)</code></pre></div>
 <p><img src="data:image/png;base64,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" /><!-- --></p>
 </div>
 <div id="conclusion" class="section level1">
-<h1>Conclusion</h1>
+<h1><span class="header-section-number">6</span> Conclusion</h1>
 <p>This is a bit of a hack, but points in a direction for getting your RMarkdown script to be checkpointed.</p>
 </div>
 

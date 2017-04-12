@@ -4,7 +4,7 @@
 
 <head>
 
-<meta charset="utf-8" />
+<meta charset="utf-8">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
@@ -12,7 +12,7 @@
 
 <meta name="author" content="Andrie de Vries" />
 
-<meta name="date" content="2017-04-07" />
+<meta name="date" content="2017-04-12" />
 
 <title>Managing checkpoint snapshot archives</title>
 
@@ -70,9 +70,19 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Managing checkpoint snapshot archives</h1>
 <h4 class="author"><em>Andrie de Vries</em></h4>
-<h4 class="date"><em>2017-04-07</em></h4>
+<h4 class="date"><em>2017-04-12</em></h4>
 
 
+<div id="TOC">
+<ul>
+<li><a href="#setting-up-an-example-project"><span class="toc-section-number">0.1</span> Setting up an example project:</a></li>
+<li><a href="#working-with-checkpoint-archive-snapshots"><span class="toc-section-number">0.2</span> Working with checkpoint archive snapshots</a></li>
+<li><a href="#working-with-access-dates"><span class="toc-section-number">0.3</span> Working with access dates</a></li>
+<li><a href="#removing-a-snapshot-from-local-disk"><span class="toc-section-number">0.4</span> Removing a snapshot from local disk</a></li>
+<li><a href="#reading-the-checkpoint-log-file"><span class="toc-section-number">0.5</span> Reading the checkpoint log file</a></li>
+<li><a href="#resetting-the-checkpoint"><span class="toc-section-number">0.6</span> Resetting the checkpoint</a></li>
+</ul>
+</div>
 
 <p>The <code>checkpoint()</code> function enables reproducible research by managing your R package versions. These pacakges are downloaded into a local <code>.checkpoint</code> folder.</p>
 <p>If you use <code>checkpoint()</code> for many projects, these local packages can consume some storage space, so the package also exposes functions to manage your snapshots.</p>
@@ -90,37 +100,37 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </ul></li>
 </ul>
 <div id="setting-up-an-example-project" class="section level2">
-<h2>Setting up an example project:</h2>
+<h2><span class="header-section-number">0.1</span> Setting up an example project:</h2>
 <p>For illustration, set up a script referencing a single package:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(MASS)
 <span class="kw">hist</span>(islands)
 <span class="kw">truehist</span>(islands)</code></pre></div>
 <p>Next, create the checkpoint:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Create a checkpoint by specifying a snapshot date
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dir.create</span>(<span class="kw">file.path</span>(<span class="kw">tempdir</span>(), <span class="st">&quot;.checkpoint&quot;</span>), <span class="dt">recursive =</span> <span class="ot">TRUE</span>, <span class="dt">showWarnings =</span> <span class="ot">FALSE</span>)
+## Create a checkpoint by specifying a snapshot date
 <span class="kw">library</span>(checkpoint)
-<span class="kw">dir.create</span>(<span class="kw">file.path</span>(<span class="kw">tempdir</span>(), <span class="st">&quot;.checkpoint&quot;</span>), <span class="dt">recursive =</span> <span class="ot">TRUE</span>, <span class="dt">showWarnings =</span> <span class="ot">FALSE</span>)
 <span class="kw">checkpoint</span>(<span class="st">&quot;2015-04-26&quot;</span>, <span class="dt">project =</span> <span class="kw">tempdir</span>(), <span class="dt">checkpointLocation =</span> <span class="kw">tempdir</span>())</code></pre></div>
 </div>
 <div id="working-with-checkpoint-archive-snapshots" class="section level2">
-<h2>Working with checkpoint archive snapshots</h2>
+<h2><span class="header-section-number">0.2</span> Working with checkpoint archive snapshots</h2>
 <p>You can query the available snapshots on disk using the <code>checkpointArchives()</code> function. This returns a vector of snapshot folders.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># List checkpoint archives on disk.</span>
 <span class="kw">checkpointArchives</span>(<span class="kw">tempdir</span>())</code></pre></div>
 <pre><code>## [1] &quot;2015-04-26&quot;</code></pre>
 <p>You can get the full paths by including the argument <code>full.names=TRUE</code>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">checkpointArchives</span>(<span class="kw">tempdir</span>(), <span class="dt">full.names =</span> <span class="ot">TRUE</span>)</code></pre></div>
-<pre><code>## [1] &quot;C:/Users/adevries/AppData/Local/Temp/RtmpAbBU8M/.checkpoint/2015-04-26&quot;</code></pre>
+<pre><code>## [1] &quot;C:/Users/adevries/AppData/Local/Temp/RtmpSWqA0D/.checkpoint/2015-04-26&quot;</code></pre>
 </div>
 <div id="working-with-access-dates" class="section level2">
-<h2>Working with access dates</h2>
+<h2><span class="header-section-number">0.3</span> Working with access dates</h2>
 <p>Every time you use <code>checkpoint()</code> the function places a small marker in the snapshot archive with the access date. In this way you can track when was the last time you actually used the snapshot archive.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Returns the date the snapshot was last accessed.</span>
 <span class="kw">getAccessDate</span>(<span class="kw">tempdir</span>())</code></pre></div>
-<pre><code>## C:/Users/adevries/AppData/Local/Temp/RtmpAbBU8M/.checkpoint/2015-04-26 
-##                                                           &quot;2017-04-07&quot;</code></pre>
+<pre><code>## C:/Users/adevries/AppData/Local/Temp/RtmpSWqA0D/.checkpoint/2015-04-26 
+##                                                           &quot;2017-04-12&quot;</code></pre>
 </div>
 <div id="removing-a-snapshot-from-local-disk" class="section level2">
-<h2>Removing a snapshot from local disk</h2>
+<h2><span class="header-section-number">0.4</span> Removing a snapshot from local disk</h2>
 <p>Since the date of last access is tracked, you can use this to manage your checkpoint archives.</p>
 <p>The function <code>checkpointRemove()</code> will delete archives from disk. You can use this function in multiple ways. For example, specify a specific archive to remove:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Remove singe checkpoint archive from disk.</span>
@@ -134,32 +144,32 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <span class="kw">checkpointRemove</span>(<span class="st">&quot;2015-04-26&quot;</span>, <span class="dt">notUsedSince =</span> <span class="ot">TRUE</span>)</code></pre></div>
 </div>
 <div id="reading-the-checkpoint-log-file" class="section level2">
-<h2>Reading the checkpoint log file</h2>
+<h2><span class="header-section-number">0.5</span> Reading the checkpoint log file</h2>
 <p>One of the side effects of <code>checkpoint()</code> is to create a log file that contains information about packages that get downloaded, as well as the download size.</p>
 <p>This file is stored in the checkpoint root folder, and is a csv file with column names, so you can read this with your favourite R function or other tools.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dir</span>(<span class="kw">file.path</span>(<span class="kw">tempdir</span>(), <span class="st">&quot;.checkpoint&quot;</span>))</code></pre></div>
-<pre><code>## [1] &quot;2015-04-26&quot;         &quot;checkpoint_log.csv&quot; &quot;R-3.3.3&quot;</code></pre>
+<pre><code>## [1] &quot;2015-04-26&quot;         &quot;R-3.5.0&quot;            &quot;checkpoint_log.csv&quot;</code></pre>
 <p>Inspect the log file:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">log_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(<span class="kw">tempdir</span>(), <span class="st">&quot;.checkpoint&quot;</span>, <span class="st">&quot;checkpoint_log.csv&quot;</span>)
 log &lt;-<span class="st"> </span><span class="kw">read.csv</span>(log_file)
 <span class="kw">head</span>(log)</code></pre></div>
-<pre><code>##             timestamp snapshotDate   pkg   bytes
-## 1 2017-04-07 14:25:25   2015-04-26 chron  107881
-## 2 2017-04-07 14:25:28   2015-04-26  MASS 1084392</code></pre>
+<pre><code>##             timestamp snapshotDate  pkg  bytes
+## 1 2017-04-12 13:19:41   2015-04-26 MASS 486894</code></pre>
 </div>
 <div id="resetting-the-checkpoint" class="section level2">
-<h2>Resetting the checkpoint</h2>
+<h2><span class="header-section-number">0.6</span> Resetting the checkpoint</h2>
 <p>In older versions of <code>checkpoint()</code> the only way to reset the effect of <code>checkpoint()</code> was to restart your R session.</p>
 <p>In v0.3.20 and above, you can use the function <code>unCheckpoint()</code>. This will reset you <code>.libPaths</code> to the user folder.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">.libPaths</span>()</code></pre></div>
-<pre><code>## [1] &quot;C:/Users/adevries/AppData/Local/Temp/RtmpAbBU8M/.checkpoint/2015-04-26/lib/x86_64-w64-mingw32/3.3.3&quot;
-## [2] &quot;C:/Users/adevries/AppData/Local/Temp/RtmpAbBU8M/.checkpoint/R-3.3.3&quot;</code></pre>
+<pre><code>## [1] &quot;C:/Users/adevries/AppData/Local/Temp/RtmpSWqA0D/.checkpoint/2015-04-26/lib/x86_64-w64-mingw32/3.5.0&quot;
+## [2] &quot;C:/Users/adevries/AppData/Local/Temp/RtmpSWqA0D/.checkpoint/R-3.5.0&quot;                                
+## [3] &quot;c:/r/R-devel/library&quot;</code></pre>
 <p>Now use <code>unCheckpoint()</code> to reset your library paths</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Note this is still experimental</span>
 <span class="kw">unCheckpoint</span>()
 <span class="kw">.libPaths</span>()</code></pre></div>
-<pre><code>## [1] &quot;C:/Users/adevries/Documents/R/win-library/3.3&quot; 
-## [2] &quot;C:/PROGRA~1/MICROS~3/RSERVE~1/R_SERVER/library&quot;</code></pre>
+<pre><code>## [1] &quot;C:\\Users\\adevries\\Documents\\R\\win-library&quot;
+## [2] &quot;c:/r/R-devel/library&quot;</code></pre>
 </div>
 
 

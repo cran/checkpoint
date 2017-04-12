@@ -39,8 +39,7 @@ test_checkpoint <- function(https = FALSE, snap_date){
   
   cleanCheckpointFolder(snap_date, checkpointLocation = checkpointLocation)
   
-  test_that(paste("checkpoint -", sub("//", "", url_prefix), "@", snap_date), {
-    if(!interactive()) skip_on_cran()
+  test_that(paste("checkpoint -", sub("//", "", url_prefix), "@", snap_date, "nothing to install"), {
     
     # finds correct MRAN URL"
     expect_equal(
@@ -52,31 +51,44 @@ test_checkpoint <- function(https = FALSE, snap_date){
     # prints message if no packages found"
     expect_message(
       checkpoint(snap_date, checkpointLocation = checkpointLocation, project = project_root),
-    "No packages found to install"
+      "No packages found to install"
     )
     
     unCheckpoint(originalLibPaths)
-    
-    # expect_true(length(find.package("knitr", quiet = TRUE)) > 0)
-    
-    # Write dummy code file to project
-    code = paste("library('", packages.to.test.base, "')", sep ="", collapse ="\n")
-    cat(code, file = file.path(project_root, "code.R"))
-    
-    # Write dummy knitr code file to project
-    code = sprintf("```{r}\n%s\n```",
-                   paste("library('", packages.to.test.knitr, "')", sep ="", collapse ="\n"))
-    cat(code, file = file.path(project_root, "code.Rmd"))
+  })
+  
+  # expect_true(length(find.package("knitr", quiet = TRUE)) > 0)
+  
+  # Write dummy code file to project
+  code = paste("library('", packages.to.test.base, "')", sep ="", collapse ="\n")
+  cat(code, file = file.path(project_root, "code.R"))
+  
+  test_that(paste("checkpoint -", sub("//", "", url_prefix), "@", snap_date, "scan for base packages"), {
+    expect_true(
+      all(packages.to.test.base %in% scanForPackages(project_root, use.knitr = FALSE)$pkgs)
+    )
+  })
+  
+  # Write dummy knitr code file to project
+  code = sprintf("```{r}\n%s\n```",
+                 paste("library('", packages.to.test.knitr, "')", sep ="", collapse ="\n"))
+  cat(code, file = file.path(project_root, "code.Rmd"))
+  
+  test_that(paste("checkpoint -", sub("//", "", url_prefix), "@", snap_date, "install all packages"), {
+    if(!knitr.is.installed()) skip("knitr not available")
     
     expect_true(
-      all(packages.to.test.base %in% projectScanPackages(project_root, use.knitr = TRUE)$pkgs)
+      all(packages.to.test.knitr %in% scanForPackages(project_root, use.knitr = TRUE)$pkgs)
     )
-    # browser()
+    expect_true(
+      all(packages.to.test %in% scanForPackages(project_root, use.knitr = TRUE)$pkgs)
+    )
+    
     # prints progress message
     unCheckpoint(originalLibPaths)
     expect_message(
-      checkpoint(snap_date, checkpointLocation = checkpointLocation, 
-                 project = project_root, use.knitr = TRUE),
+      checkpoint(snap_date, project = project_root,
+                 checkpointLocation = checkpointLocation, use.knitr = TRUE),
       "Installing packages used in this project"
     )
     
@@ -88,7 +100,7 @@ test_checkpoint <- function(https = FALSE, snap_date){
     base.packages <- pkgNames(utils::installed.packages(priority = "base", 
                                                         lib.loc = .Library,
                                                         noCache = TRUE))
-    # browser()
+    
     expected.packages <- setdiff(packages.to.test.base, c("checkpoint", base.packages))
     
     z <- expect_true(
@@ -109,6 +121,41 @@ test_checkpoint <- function(https = FALSE, snap_date){
       }
     }
     messageMissingPackages(expected.packages, pkgNames(pdbLocal))
+    
+    # re-installs packages when forceInstall=TRUE
+    unCheckpoint(originalLibPaths)
+    expect_message(
+      checkpoint(snap_date,
+                 checkpointLocation = checkpointLocation,
+                 project = project_root, scanForPackages=TRUE, 
+                 forceInstall = TRUE),
+      "Removing packages to force re-install"
+    )
+    
+    # writes log file in csv format
+    logfile <- file.path(checkpointLocation, ".checkpoint/checkpoint_log.csv")
+    expect_true(file.exists(logfile))
+    expect_is(
+      logdata <- read.csv(logfile, nrows = 5), 
+      "data.frame"
+    )
+    expect_length(names(logdata), 4)
+    
+    # uses correct library location
+    expect_equal(
+      checkpointPath(snap_date, checkpointLocation, type = "lib"),
+      normalizePath(.libPaths()[1], winslash = "/")
+    )
+    
+    # uses correct MRAN url
+    expect_equal(
+      getOption("repos"),
+      paste0(url_prefix, "mran.microsoft.com/snapshot/", snap_date)
+    )
+    
+  })
+  
+  test_that(paste("checkpoint -", sub("//", "", url_prefix), "@", snap_date, "other tests"), {
     
     # does not display message whan scanForPackages=FALSE
     unCheckpoint(originalLibPaths)
@@ -136,51 +183,20 @@ test_checkpoint <- function(https = FALSE, snap_date){
                  project = project_root, scanForPackages=FALSE),
       "Specified R.version 2.15.0 does not match current R"
     )
-    
-    # re-installs packages when forceInstall=TRUE
-    unCheckpoint(originalLibPaths)
-    expect_message(
-      checkpoint(snap_date,
-                 checkpointLocation = checkpointLocation,
-                 project = project_root, scanForPackages=TRUE, 
-                 forceInstall = TRUE),
-      "Removing packages to force re-install"
-    )
-    
-    # uses correct MRAN url
-    expect_equal(
-      getOption("repos"),
-      paste0(url_prefix, "mran.microsoft.com/snapshot/", snap_date)
-    )
-    
-    # uses correct library location
-    expect_equal(
-      checkpointPath(snap_date, checkpointLocation, type = "lib"),
-      normalizePath(.libPaths()[1], winslash = "/")
-    )
-    
-    # writes log file in csv format
-    logfile <- file.path(checkpointLocation, ".checkpoint/checkpoint_log.csv")
-    expect_true(file.exists(logfile))
-    expect_is(
-      logdata <- read.csv(logfile, nrows = 5), 
-      "data.frame"
-    )
-    expect_length(names(logdata), 4)
   })
   
-  # cleanup
-  cleanCheckpointFolder(snap_date, checkpointLocation = checkpointLocation)
-  unCheckpoint(originalLibPaths)
-  expect_identical(originalLibPaths, .libPaths())
+  test_that(paste("checkpoint -", sub("//", "", url_prefix), "@", snap_date, "cleanup"), {
+    # cleanup
+    cleanCheckpointFolder(snap_date, checkpointLocation = checkpointLocation)
+    unCheckpoint(originalLibPaths)
+    expect_identical(originalLibPaths, .libPaths())
+  })
 }
-
 
 
 #  ------------------------------------------------------------------------
 
 if(is_online()){
-  # if(interactive()) set_mock_environment()
   if(TRUE){
     MRAN.dates <- getValidSnapshots()
     MRAN.sample <- sample(MRAN.dates, 2, replace = FALSE)
@@ -205,11 +221,4 @@ if(is_online()){
     })
     
   }
-  # if(interactive()) reset_mock_environment()
 }
-
-
-
-
-
-
