@@ -1,13 +1,17 @@
 ## ----setup-1, include=FALSE----------------------------------------------
+
 ## Write dummy code file to project
 example_code <- '
-library(MASS)
+library(darts)
 '
 dir.create(tempdir(), recursive = TRUE)
 cat(example_code, file = file.path(tempdir(), "managing_checkpoint_example_code.R"))
 
 ## ----checkpoint, results="hide", message=FALSE, warning=FALSE------------
 dir.create(file.path(tempdir(), ".checkpoint"), recursive = TRUE, showWarnings = FALSE)
+options(install.packages.compile.from.source = "no")
+oldLibPaths <- .libPaths()
+
 ## Create a checkpoint by specifying a snapshot date
 library(checkpoint)
 checkpoint("2015-04-26", project = tempdir(), checkpointLocation = tempdir())
@@ -54,10 +58,10 @@ head(log)
 
 ## ----uncheckpoint-2------------------------------------------------------
 # Note this is still experimental
-unCheckpoint()
+unCheckpoint(oldLibPaths)
 .libPaths()
 
-## ----cleanup, include=FALSE----------------------------------------------
+## ----cleanup, include=TRUE-----------------------------------------------
 ## cleanup
 unlink("manifest.R")
 unlink(file.path(tempdir(), "managing_checkpoint_example_code.R"))

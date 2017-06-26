@@ -4,7 +4,7 @@
 
 <head>
 
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
@@ -12,7 +12,7 @@
 
 <meta name="author" content="Andrie de Vries" />
 
-<meta name="date" content="2017-04-12" />
+<meta name="date" content="2017-06-26" />
 
 <title>Using checkpoint in a markdown document</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Using checkpoint in a markdown document</h1>
 <h4 class="author"><em>Andrie de Vries</em></h4>
-<h4 class="date"><em>2017-04-12</em></h4>
+<h4 class="date"><em>2017-06-26</em></h4>
 
 
 <div id="TOC">
@@ -87,24 +87,35 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div id="introduction" class="section level1">
 <h1><span class="header-section-number">1</span> Introduction</h1>
 <p>Sometimes you want to use create a report using <code>markdown</code>, and you want to <code>checkpoint</code> the code in this document.</p>
-<p>However, running this as part of a <code>RMarkdown</code> process is problematic, since the knitting process runs inside a temporary folder that is different from the current working directory.</p>
+<p>However, running this as part of a <code>R Markdown</code> process is problematic, since the knitting process runs inside a temporary folder that is different from the current working directory.</p>
 <p>To resolve this, I propose a hacky solution: create a “manifest” file in the same folder that contains all of the <code>library()</code> calls.</p>
 </div>
 <div id="example" class="section level1">
 <h1><span class="header-section-number">2</span> Example</h1>
-<p>Imagine you have a small script that you want to put in an Rmarkdown document with a checkpoint.</p>
+<p>Imagine you have a small script that you want to put in an R Markdown document with a checkpoint.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># demo script</span>
-<span class="kw">library</span>(MASS)
-<span class="kw">hist</span>(islands)</code></pre></div>
+<span class="co"># Example from ?darts</span>
+<span class="kw">library</span>(darts)
+x =<span class="st"> </span><span class="kw">c</span>(<span class="dv">12</span>,<span class="dv">16</span>,<span class="dv">19</span>,<span class="dv">3</span>,<span class="dv">17</span>,<span class="dv">1</span>,<span class="dv">25</span>,<span class="dv">19</span>,<span class="dv">17</span>,<span class="dv">50</span>,<span class="dv">18</span>,<span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">17</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">13</span>,<span class="dv">18</span>,<span class="dv">16</span>,<span class="dv">2</span>,<span class="dv">25</span>,<span class="dv">5</span>,<span class="dv">5</span>,
+      <span class="dv">1</span>,<span class="dv">5</span>,<span class="dv">4</span>,<span class="dv">17</span>,<span class="dv">25</span>,<span class="dv">25</span>,<span class="dv">50</span>,<span class="dv">3</span>,<span class="dv">7</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">7</span>,<span class="dv">11</span>,<span class="dv">10</span>,<span class="dv">25</span>,<span class="dv">1</span>,<span class="dv">19</span>,<span class="dv">15</span>,<span class="dv">4</span>,<span class="dv">1</span>,<span class="dv">5</span>,<span class="dv">12</span>,<span class="dv">17</span>,<span class="dv">16</span>,
+      <span class="dv">50</span>,<span class="dv">20</span>,<span class="dv">20</span>,<span class="dv">20</span>,<span class="dv">25</span>,<span class="dv">50</span>,<span class="dv">2</span>,<span class="dv">17</span>,<span class="dv">3</span>,<span class="dv">20</span>,<span class="dv">20</span>,<span class="dv">20</span>,<span class="dv">5</span>,<span class="dv">1</span>,<span class="dv">18</span>,<span class="dv">15</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">25</span>,<span class="dv">12</span>,<span class="dv">9</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">16</span>,<span class="dv">20</span>,
+      <span class="dv">5</span>,<span class="dv">5</span>,<span class="dv">1</span>,<span class="dv">4</span>,<span class="dv">15</span>,<span class="dv">16</span>,<span class="dv">5</span>,<span class="dv">20</span>,<span class="dv">16</span>,<span class="dv">2</span>,<span class="dv">25</span>,<span class="dv">6</span>,<span class="dv">12</span>,<span class="dv">25</span>,<span class="dv">11</span>,<span class="dv">25</span>,<span class="dv">7</span>,<span class="dv">2</span>,<span class="dv">5</span>,<span class="dv">19</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">2</span>,<span class="dv">12</span>)
+mod =<span class="st"> </span><span class="kw">simpleEM</span>(x, <span class="dt">niter=</span><span class="dv">100</span>)
+e =<span class="st"> </span><span class="kw">simpleExpScores</span>(mod$s.final)
+oldpar &lt;-<span class="st"> </span><span class="kw">par</span>(<span class="dt">mfrow=</span><span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))
+<span class="kw">drawHeatmap</span>(e)
+<span class="kw">drawBoard</span>(<span class="dt">new=</span><span class="ot">TRUE</span>)
+<span class="kw">drawAimSpot</span>(e, <span class="dt">cex =</span> <span class="dv">5</span>)
+<span class="kw">par</span>(oldpar)</code></pre></div>
 </div>
 <div id="the-checkpoint-solution" class="section level1">
 <h1><span class="header-section-number">3</span> The checkpoint solution</h1>
-<p>The only way I’ve found to get <code>checkpoint()</code> to work inside an RMardown document, is really a bit of a hack. The workaround is to create a manifest of required packages, and write this to an R file in the working directory.</p>
-<p>For example, imagine your R script uses the <code>MASS</code> package, then create a manifest file like this:</p>
+<p>The only way I’ve found to get <code>checkpoint()</code> to work inside an R Markdown document, is really a bit of a hack. The workaround is to create a manifest of required packages, and write this to an R file in the working directory.</p>
+<p>For example, imagine your R script uses the <code>darts</code> package, then create a manifest file like this:</p>
 <pre><code>```{r, include=FALSE}
 # write a manifest to local folder
 cat(&quot;
-library(MASS)
+library(darts)
 &quot;,
 file = &quot;manifest.R&quot;)
 ```</code></pre>
@@ -114,7 +125,7 @@ file = &quot;manifest.R&quot;)
 <pre><code>```{r, include=FALSE}
 # Create .checkpoint folder (in tempdir for this example)
 td &lt;- tempdir()
-dir.create(file.path(td, &quot;.checkpoint&quot;), recursive = TRUE)
+dir.create(file.path(td, &quot;.checkpoint&quot;), recursive = TRUE, showWarnings = FALSE)
 
 # Create the checkpoint
 library(checkpoint)
@@ -126,67 +137,88 @@ checkpoint(&quot;2017-03-28&quot;, checkpointLocation = td)
 <p>Now you are ready to put these instructions in an actual code block to see what happens.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># write a manifest to local folder</span>
 <span class="kw">cat</span>(<span class="st">'</span>
-<span class="st">library(MASS)</span>
+<span class="st">library(darts)</span>
 <span class="st">'</span>,
 <span class="dt">file =</span> <span class="st">&quot;manifest.R&quot;</span>)
 
 <span class="co"># Create .checkpoint folder (in tempdir for this example)</span>
-<span class="kw">dir.create</span>(<span class="kw">file.path</span>(<span class="kw">tempdir</span>(), <span class="st">&quot;.checkpoint&quot;</span>), <span class="dt">recursive =</span> <span class="ot">TRUE</span>)
+<span class="kw">dir.create</span>(<span class="kw">file.path</span>(<span class="kw">tempdir</span>(), <span class="st">&quot;.checkpoint&quot;</span>), <span class="dt">recursive =</span> <span class="ot">TRUE</span>, <span class="dt">showWarnings =</span> <span class="ot">FALSE</span>)
+<span class="kw">options</span>(<span class="dt">install.packages.compile.from.source =</span> <span class="st">&quot;no&quot;</span>)
 
 <span class="co"># Create the checkpoint</span>
 <span class="kw">library</span>(checkpoint)
 <span class="kw">checkpoint</span>(<span class="st">&quot;2017-03-28&quot;</span>, <span class="dt">checkpointLocation =</span> <span class="kw">tempdir</span>())</code></pre></div>
 <pre><code>## Scanning for packages used in this project</code></pre>
-<pre><code>## No file at path 'C:\Users\adevries\AppData\Local\Temp\RtmpSWqA0D\file589c640e42a3.Rmd'.</code></pre>
-<pre><code>## No file at path 'C:\Users\adevries\AppData\Local\Temp\RtmpSWqA0D\file589c5e3f2228.Rmd'.</code></pre>
-<pre><code>## No file at path 'C:\Users\adevries\AppData\Local\Temp\RtmpSWqA0D\file589c394a6e76.Rmd'.</code></pre>
+<pre><code>## No file at path 'C:\Users\adevries\AppData\Local\Temp\Rtmpu0jy9G\file4be02afe6dc6.Rmd'.</code></pre>
+<pre><code>## No file at path 'C:\Users\adevries\AppData\Local\Temp\Rtmpu0jy9G\file4be035735eb1.Rmd'.</code></pre>
+<pre><code>## No file at path 'C:\Users\adevries\AppData\Local\Temp\Rtmpu0jy9G\file4be08557fcc.Rmd'.</code></pre>
 <pre><code>## - Discovered 3 packages</code></pre>
 <pre><code>## Unable to parse 3 files:</code></pre>
+<pre><code>## - archive/managing-checkpoint-archives.Rmd</code></pre>
 <pre><code>## - checkpoint.Rmd</code></pre>
-<pre><code>## - managing-checkpoint-archives.Rmd</code></pre>
 <pre><code>## - using-checkpoint-with-knitr.Rmd</code></pre>
 <pre><code>## Installing packages used in this project</code></pre>
-<pre><code>##  - Installing 'MASS'</code></pre>
-<pre><code>## MASS</code></pre>
+<pre><code>##  - Installing 'darts'</code></pre>
+<pre><code>## darts</code></pre>
 <pre><code>##  - Installing 'knitr'</code></pre>
 <pre><code>## knitr</code></pre>
 <pre><code>## also installing the dependencies 'mime', 'stringi', 'magrittr', 'evaluate', 'digest', 'highr', 'markdown', 'stringr', 'yaml'</code></pre>
 <pre><code>## checkpoint process complete</code></pre>
 <pre><code>## ---</code></pre>
-<p>If this worked, you should see that the library path now points to <code>tempdir()</code> and that MASS should be one of only a few package installed:</p>
+<p>If this worked, you should see that the library path now points to <code>tempdir()</code> and that <code>darts</code> is one of only a few package installed:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">.libPaths</span>()
 ## [1] &quot;.../Temp/RtmpIVB6bI/.checkpoint/2017-03-28/lib/x86_64-w64-mingw32/3.3.2&quot;
 ## [2] &quot;.../Temp/RtmpIVB6bI/.checkpoint/R-3.3.2&quot;</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">installed.packages</span>()[, <span class="st">&quot;Package&quot;</span>]</code></pre></div>
-<pre><code>##         MASS       digest     evaluate        highr        knitr 
-##       &quot;MASS&quot;     &quot;digest&quot;   &quot;evaluate&quot;      &quot;highr&quot;      &quot;knitr&quot; 
-##     magrittr     markdown         mime      stringi      stringr 
-##   &quot;magrittr&quot;   &quot;markdown&quot;       &quot;mime&quot;    &quot;stringi&quot;    &quot;stringr&quot; 
-##         yaml     compiler   KernSmooth         MASS       Matrix 
-##       &quot;yaml&quot;   &quot;compiler&quot; &quot;KernSmooth&quot;       &quot;MASS&quot;     &quot;Matrix&quot; 
-##         base         boot        class      cluster    codetools 
-##       &quot;base&quot;       &quot;boot&quot;      &quot;class&quot;    &quot;cluster&quot;  &quot;codetools&quot; 
-##     compiler     datasets      foreign    grDevices     graphics 
-##   &quot;compiler&quot;   &quot;datasets&quot;    &quot;foreign&quot;  &quot;grDevices&quot;   &quot;graphics&quot; 
-##         grid      lattice      methods         mgcv         nlme 
-##       &quot;grid&quot;    &quot;lattice&quot;    &quot;methods&quot;       &quot;mgcv&quot;       &quot;nlme&quot; 
-##         nnet     parallel        rpart      spatial      splines 
-##       &quot;nnet&quot;   &quot;parallel&quot;      &quot;rpart&quot;    &quot;spatial&quot;    &quot;splines&quot; 
-##        stats       stats4     survival        tcltk        tools 
-##      &quot;stats&quot;     &quot;stats4&quot;   &quot;survival&quot;      &quot;tcltk&quot;      &quot;tools&quot; 
-##        utils 
-##      &quot;utils&quot;</code></pre>
+<pre><code>##          darts         digest       evaluate          highr          knitr 
+##        &quot;darts&quot;       &quot;digest&quot;     &quot;evaluate&quot;        &quot;highr&quot;        &quot;knitr&quot; 
+##       magrittr       markdown           mime        stringi        stringr 
+##     &quot;magrittr&quot;     &quot;markdown&quot;         &quot;mime&quot;      &quot;stringi&quot;      &quot;stringr&quot; 
+##           yaml       compiler           base           boot          class 
+##         &quot;yaml&quot;     &quot;compiler&quot;         &quot;base&quot;         &quot;boot&quot;        &quot;class&quot; 
+##        cluster      codetools       compiler       datasets        foreign 
+##      &quot;cluster&quot;    &quot;codetools&quot;     &quot;compiler&quot;     &quot;datasets&quot;      &quot;foreign&quot; 
+##       graphics      grDevices           grid     KernSmooth        lattice 
+##     &quot;graphics&quot;    &quot;grDevices&quot;         &quot;grid&quot;   &quot;KernSmooth&quot;      &quot;lattice&quot; 
+##           MASS         Matrix        methods           mgcv           nlme 
+##         &quot;MASS&quot;       &quot;Matrix&quot;      &quot;methods&quot;         &quot;mgcv&quot;         &quot;nlme&quot; 
+##           nnet       parallel          rpart        spatial        splines 
+##         &quot;nnet&quot;     &quot;parallel&quot;        &quot;rpart&quot;      &quot;spatial&quot;      &quot;splines&quot; 
+##          stats         stats4       survival          tcltk          tools 
+##        &quot;stats&quot;       &quot;stats4&quot;     &quot;survival&quot;        &quot;tcltk&quot;        &quot;tools&quot; 
+##   translations          utils 
+## &quot;translations&quot;        &quot;utils&quot;</code></pre>
 </div>
 <div id="your-real-r-code" class="section level1">
 <h1><span class="header-section-number">5</span> Your real R code:</h1>
 <p>Now your real R code follows, and it creates the plot, as expected:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(MASS)
-<span class="kw">hist</span>(islands)</code></pre></div>
-<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEgCAMAAAAjXV6yAAAAYFBMVEUAAAAAADoAAGYAOjoAOpAAZrY6AAA6ADo6AGY6OgA6Ojo6kNtmAABmADpmtrZmtv+QOgCQOjqQkGaQtpCQ2/+2ZgC2Zma225C2///bkDrb////tmb/25D//7b//9v///+EDXKPAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAIqUlEQVR4nO2d24KbNhRFmWnstLVTT1vTDsGY///LIB0JBBg2F3EZsddDgm3NkVjWzSAgykkv0dYF2DsUBKAgAAUBKAhAQQAKAlAQgIIAFASgIAAFASgIQEEACgJQEICCABQEoCAABQEoCEBBAAoCUBCAggAUBKAgAAUBKAhAQQAKAlAQwIug50f07af8fypfOPz36SMXlziKiqycrJtF6f/j9+EFWkFQdh1RnmGkhZ/o4mbdLEofGwuaV55hJNHbvb8ofeyjBiXqS1YbqjXoEj3O9mvXb77ddUGLff33rPZXf6z2O7tGJ1VFbiqGK6IMoEPKJ83czOsymHYZl3GqfKs/2UaQzl6LsYLMO2YvVPn/qN7+9jOVj4sdKQQ5VF92FaAlqMpNXlfB7Ed6W/KtFQfWJV+CLEaQqgW6q7jYGl18p7InF/3+SX+bUlDj7KQTXbSgS17WIVPnagGqJtbMTb92gqk/kFzq+boF3EJQUbjyuxFBpuHHUqnUdlFGKfrNxkl0gOL9woT8KzvphMltu3QFOblVfZAEM/GLFKfczdctYC8LCTLvXMo9swVXu2a3a/tqY2hBp9z8WwlyAzQFOblJsiqYSaqj2TFE5esWcBVBzT7IdiQ340H2V1fqm912BekCyyevBbkBmoKc3CphJhtHUC1fp4CbCMqrYWJQDRITPYL6apCTm21yNlijBlX55gPHsaUEPf++57Uep7sP0vua2q7i0iGorw9yctOvnWCuoFq+TgG3ECRDjh2DVRG7RzFbg6RpdNWgvlHMya16LcFqgpx83QJuIchOM1Th0trE45Q350FVH9TXSedugGYNqnJzO+2WIJlA1YrTNSNfXJDMZaX+momsfsf0ifpbbI1ib/eknKK0BTkBWn1QmVs1ikmwuiBt6FZOzAbMEzc93BEPmOlvziaCYt2RyORt72wiKI0GdgA7YJsmJrO0L9DAeMgVQkEACgJQEICCABQEoCAABQEoCEBBAAoCUBCAggAUBKAgAAUBKAhAQQAKAlAQgIIAFASgIAAFASgIQEGAcYLswhvvS+f3yyhBiV2skw5YHhoIYwQ9P6rVXl9i4YEPxgjKruWa2fQwjYw1CDCyDzJVCPRBUZvpJdyYcSW3y9NB/WkHPYqgyUGPLqjRlI4u6HHuvALk2ILcSwE7hvljC7KDF2tQJ9lV1v1TUCexvj6ZgropfrBSUC+P828U1Mvzo/tCTwoaFI6CQDgKAuGCFGQvWvQRLkhBctHs3EPNQQvKPTgKXZAomnG8OXBBqbn9xfQDziELUgczxMyMUxYBC8quPq5BDliQz3CBCor1zb/mDfQhC4p1B5RdZ00XAxZkzyvPO6kcsCB7XjmhoBpVyeW88uPMmXQNp+TV3SvHR+GJw1HhKAiEC1OQl/WHIQuKfSwaC1hQdvWxLjNoQeimncPDBSno+eHjjmsBCyp+p3qoQgELKhf/cBSrwXkQgIIATsn1TdJjHjCr43TSb/dE3T+fv+Zr1I4HqQsMeDyoTm2iqATxiGKdVg2KZ12mErAg0wclvdNF+Is/ZEEyVew9ooivOAxaEGTA9WLHFjTgisOABQ34LcYalIPzhviKw/AF5XHfYSF4xeEBBHGiWKdV8kk/NQ504rB/dUdSPhrluKNY3y+NRD+BUD9c53iCBiDDvF7jSUGvsBPF4vfsAQUNuGK3nCjGpwMKMqd9en/NWy3yjLfucEEKen6Imd7bllh9z4/jCcp+yIEOThTrtGoQjyjWqR1RzGWqMztcmIJkHJt546SgBfkLR0EgXKCCeOr5FTz1DOCpZwBPPQN46hkw7tTzwHBhChpw6nlouEAF+QsXpCDntOnscEEK4kr71zidNC9mecWYxQs9UY5z4tBLOAoC4cIT5KeHzgMX5GOgp6BB4SgIhKMgEI6CQDgKAuFCFASXdowJF54gz+EoCISjIBCOgkA4CgLhKAiEoyAQjoJAOAoC4SgIhHsh6Ms+sm6rGhSoIH+XhYcpyONl4e02Nwlc5rmNe0xynxf1Tkkyqe+fW3fHJO++LLx54nDXLCeID6JFDH0QbUiMq3ADH0QbEl9muN2KRQRt2wkL3vbFV6CpQUekXSjsSoGmBqUgf2kpaJuwKwWaGpSC/KWloG3CrhRoalAK8pc2HEEhQUEACgJQEICCABQEoCAABQEoCEBBAAoCUBCAggD+BaW9t2+QU48nN117YyyP3z+XCu1fkLpXXNpdmMf3eyNde2Ms2VUvpVgitH9BssCh+7bmdllIma69MZbULOhaIHTuX9DjrG942rkELTk10rU3RuaYRhdR4z+0wrsgXc+77+IQ/1n0ExcnXXtjfKbyR4uE9i5IWnpne8+uamFIfKnStTcmZKp2fZnQawsyid4//QtaJvTqTUwSnW8LNLFFQq/eSUui73evPakryHPotYd5KWqxQ17HYi1omdCrTxR1KdXtPn3O5swotkToBX5qJP2z+jiyj+aw6dobYzFNbInQ/LGKoCAABQEoCEBBAAoCUBCAggAUBKAgAAUBKAhAQQAKAlAQgIIAFASgIAAFASgIQEEACgJQEICCABQEoCAABQF2JMh9+kn3k1AmrkGYzI4EuVAQgIJeoKU8znoNi942y1my619XWdeiFrH8UwgyiVZhZ4L0MrE0uqlttSBKPd09uxb/qI34/bP47O1uE61Sqp0JsqsNi+3sx13W1emnK6vFmXqNXfx29/IsvaHsTJC57ML2QWnZ3Ip/xEvRB9lEq7AzQXI7XZFS9Djv/58rQYkVZBOtwt4EKWJVSaRFPc4vapBNtEqp9ihIdUDGR+o0MbPa2Yjx9lA9wM4E2UW7xkd2jS6lIO1GjWLlyt412Jkg1S1Hemi/ydJdaW7mQzsPMolWYUeC9gkFASgIQEEACgJQEICCABQEoCAABQEoCEBBAAoCUBCAggAUBKAgAAUBKAhAQQAKAlAQgIIAFAT4BU9H9A1eNGvqAAAAAElFTkSuQmCC" /><!-- --></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Example from ?darts</span>
+<span class="kw">library</span>(darts)
+x =<span class="st"> </span><span class="kw">c</span>(<span class="dv">12</span>,<span class="dv">16</span>,<span class="dv">19</span>,<span class="dv">3</span>,<span class="dv">17</span>,<span class="dv">1</span>,<span class="dv">25</span>,<span class="dv">19</span>,<span class="dv">17</span>,<span class="dv">50</span>,<span class="dv">18</span>,<span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">17</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">13</span>,<span class="dv">18</span>,<span class="dv">16</span>,<span class="dv">2</span>,<span class="dv">25</span>,<span class="dv">5</span>,<span class="dv">5</span>,
+      <span class="dv">1</span>,<span class="dv">5</span>,<span class="dv">4</span>,<span class="dv">17</span>,<span class="dv">25</span>,<span class="dv">25</span>,<span class="dv">50</span>,<span class="dv">3</span>,<span class="dv">7</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">7</span>,<span class="dv">11</span>,<span class="dv">10</span>,<span class="dv">25</span>,<span class="dv">1</span>,<span class="dv">19</span>,<span class="dv">15</span>,<span class="dv">4</span>,<span class="dv">1</span>,<span class="dv">5</span>,<span class="dv">12</span>,<span class="dv">17</span>,<span class="dv">16</span>,
+      <span class="dv">50</span>,<span class="dv">20</span>,<span class="dv">20</span>,<span class="dv">20</span>,<span class="dv">25</span>,<span class="dv">50</span>,<span class="dv">2</span>,<span class="dv">17</span>,<span class="dv">3</span>,<span class="dv">20</span>,<span class="dv">20</span>,<span class="dv">20</span>,<span class="dv">5</span>,<span class="dv">1</span>,<span class="dv">18</span>,<span class="dv">15</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">25</span>,<span class="dv">12</span>,<span class="dv">9</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">16</span>,<span class="dv">20</span>,
+      <span class="dv">5</span>,<span class="dv">5</span>,<span class="dv">1</span>,<span class="dv">4</span>,<span class="dv">15</span>,<span class="dv">16</span>,<span class="dv">5</span>,<span class="dv">20</span>,<span class="dv">16</span>,<span class="dv">2</span>,<span class="dv">25</span>,<span class="dv">6</span>,<span class="dv">12</span>,<span class="dv">25</span>,<span class="dv">11</span>,<span class="dv">25</span>,<span class="dv">7</span>,<span class="dv">2</span>,<span class="dv">5</span>,<span class="dv">19</span>,<span class="dv">17</span>,<span class="dv">17</span>,<span class="dv">2</span>,<span class="dv">12</span>)
+mod =<span class="st"> </span><span class="kw">simpleEM</span>(x, <span class="dt">niter=</span><span class="dv">100</span>)
+e =<span class="st"> </span><span class="kw">simpleExpScores</span>(mod$s.final)
+oldpar &lt;-<span class="st"> </span><span class="kw">par</span>(<span class="dt">mfrow=</span><span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))
+<span class="kw">drawHeatmap</span>(e)
+<span class="kw">drawBoard</span>(<span class="dt">new=</span><span class="ot">TRUE</span>)
+<span class="kw">drawAimSpot</span>(e, <span class="dt">cex =</span> <span class="dv">5</span>)</code></pre></div>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAGACAMAAAA6QU9cAAAAq1BMVEUAAAAAADoAAGYAAP8AOpAAZrY6AAA6ADo6AGY6Ojo6kNtmAABmADpmtv+QOgCQZgCQ2/+2ZgC2/7a2///bkDrb////AAD/DAD/FwD/IwD/LgD/OgD/RgD/UQD/XQD/aAD/dAD/gAD/iwD/lwD/ogD/rgD/tmb/uQD/xQD/0QD/25D/3AD/6AD/8wD//wD//xL//zf//1v//4D//6T//7b//8j//9v//+3////YKcmUAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAgAElEQVR4nO3dh3rbRrYA4ElxvGvdeK0N4xLL6o2SWOWC93+yS2DaqdMAWbZW+HZjih0/zzkzAGYA0z0vycU89hf40ZdnoMzyDJRZnoEyyzNQZnkGyizPQJnlGSizPANllmegzPIMlFmegTLLM1BmeWpAX18bY171ty6N+eXN+Dd8YkBfX+9QZubFzmd343ICoScGdPPHn7v/zn796+vrPoz2X4x+xycGZJdd5ASpse/1JIH2f/3r5mWfXZfPQNJyuavStvxMUISeINClr9HPQOJyObTyzynmls97u36PAY3VzPaCpCJ9868Grp8dyEZKXGbmz+FfoZn/vNcSTz87EEmimz9e+QdoR3HXs/5fBJrhruDMDEsPM8ObGrvS1FSRfnag/X/7ba/88r8I9Hnv9793SmVCY4HMIy71Xzyx5trbjgZ6G5Z3w/J+t3zol392y8d+OTg4+PTp0+Hh4dHx8cnJ6enZ2fnFxcXVsOxunJ+fnZ2eHB8fHR0e7p53MCwfw9K/Tf92u7cd3j9+3kgg26a7tQAuxGhqoPceCPocWB8LtPM59z4D0U7o9KQXOuyFDsKChaYH8m09jxp4z0MACfHzKficep/r3RKAeiEXQoDowAuJIdQMZGPHrbmcq/He6YBQAHmfg4OYYCCAnM9AFELoyIYQEjpAIfR+GiDbFRyK9OAgAbmHHgQo6eMD6PoaCvUhFKrQJ4RkY2haoG5/t/Z9FFkDGcg9OhlQKNEuwaDPkGAhgJzPvF96oR7IhRAQgvVarkLjOxsujTSgrrmhFIBoAQrVeQgf53PqE2zgub29HYh2MeRCyGYZRaJCUwGFMqMCNRNlgGL8YJ+QYL3P7bD0QgOQa8ic0GF0AkIkhEYCgYa9w/05uIZtQgkgG0CSD0ww79MLuSTzIQSFDoOQB3o/GRBYc9I9xH82CXEgHkCSjwNyAXR3d2eFcAgxIifEcmwUEPbhj44T0oEUnxhA5z6A7oalF+pDqAeKQkfAaRByLdl0QKjjzIuQgUQNQjKQEEDYJwaQ9+mF+hByOeaSDBs5IRdCoAiNADKxCKOKA1fQgCdVvz+4STNM9WEBtFgsrFDMsV6IEXkgGkLtQHTVRSD+tIoPADfFDBN9cAAthiWE0HkIobB4IRBC0wCxFVeA2oVEIBxA2McnmA+gOw/UC/kcY0LWKIZQKNNjgfxaG3wHX8FUV6ngE4abLIB8glEfBxQDaLkchECO+SRDRDHJSDvW3M1l3WQVKBFk6Y8AN1mJBgEU88sHkAVyPsueyIfQkGO9UFyCkJxjjUDcJwUkPb3gM8BNABQrUPA5Dj6wk9gDLR2QCyGXY1godB0nBJJWOAXUJESAeIbJPrFEe58hhDyQJOQ2P8QQKvzG9shfGCNl4oZ6GRB6hTuMOHN7AyqAQIl2AUR9HFAIoNVu6YX6HLu2OdYD9USnp+6GExqSrBHIHvkLY6Rcxwe/Ng3UmdAtcocRZ/3hs5SQDOQCyFVo7BN2tA5A3qcXQjl2doqX8UDuyJ8/qOz2j5GXZoDcK4xxb/b19bDDLTHOCgPFDAsB5HaQQZ+wn+MWA7kQurIhRIXc5ofNsQYgfOTv8hfbb2b7oHNAxvWt7Zu1AL2nQLD9ignmM8z7DCEUgbzQmVuCEAuhihoEgPZjslQBxcS8bEkxmmExgJCPAwoBtN4tvVCfY26fx/kZWVAI0RyrBrqUCnQRUCjU7s1yg2ERkJhhcfvCxoP3sUBDAK2tUB9CtzCEKJEPIZZjtUCX6h7WPJAXsm+2v/tvHPFQCIQCyO1BDD4xgEKGrQFQDKFz/+xhCUKhKxS26OuBLo3fRd8SQX43Pqz4+t58BkQzTPPxGeZ9BqGYYxfndDkLh8xAjjUBzcwrn2DZEJKe4HT7N8uP1JOBbCex7wOFXdAhv+zBZgK0AUBzd4RMFHI5Rqp0FdDM/Bl6QE1Avjf0FznwmAWSM0zzARm22S29EChCQejCLoNQCCFahGqAdhUjHgNrAxr+f2mqaxDLMJhgwAcCeZ9eqA8hV4SuLtjiQ8gBoSJUA+THSMk7EAuBTP9mw2P7Jj2+iAC9DxnmAijs3zg7jzwwgNYeaONDaI6ErsjYjxPcjlUB+S8aAqgVCBxuzX4YuKkFEPPBQBsCZENoMLkCix/awHOsGgisXcGmhXSHeqBa/jB3E3aChgAiPhfIJ5Tonc12u+2FPJAT8ov7yx2X7ss0LUJ1e2jgNmojUCdt6MqfBm7CNowAER8CtPVArgjNr6NQGNiAgFw71gYEv3crkJah8qe5m1KGJXwGIO/TC/U55rboPdA1GPpxFXKM9YRqgPBv3w5UGEICEM4wt3/jPBbcCLTkQCHHwGL/jCHEG/oqIPS1m4FKQ0gEihkWAoj4xAzbRCCXYwRoHgbH2BCSilAtUGIvfQYIvFDuJkgf529CINDG2/0bFyBnYgCtQgANIeSKEBCa++Xa7Wq0DX2fY21A9IdvBioMIQTkStBHlGGSj5BhAciG0BzzzOPQjwmAUocxKoCKQogDkQw7A0DX0AcC3d/DKt23Y3Hxg4fiYWlepcuB2Fq1AzFr+QPBTbAd5jMMBVBMmlu/t94C3d9bIVelbQgBnjAAzYYQ316tAKIrNQaoJIR0IFCiL8BYVrfWd6FGbxGQK0K3xMcNQHNArEoXAwnrlBZJ/lkSQhAIZthhyDDk41f7Dtbo+3srFIqQF7I0duxQGF7lekKNQHyVkiGUjq+SEEoA2Qw7B0AxLFiGOaB1APLLHR1eBbuKH5qAUutcBaTsMdFeYXyG+Q15Opge+oTtjK0EdEd90PizWIQ+VAJJOTEKyGRzjAOBDAMHCUF63fohHRTIV+kYQndxATlGqnQtUHqdq4AKQogC8QwTffzxnphhGOgu8iz88LNbBeh9MZBYM8YDJT9dBAJtWACCjZIIdB+asQUInDD87I4BHdQDiauTSrnsllk2hBAQKEEhwzQfEcg1YwvC44R8lUbt/IdaoNQqsD9zQPkcI0BahmEeUIIEIBBCiwUQcqOrfF8a7pcuAxqG+U4NhIYJSx8KbuIMOybTVaiPDGSL0AL6uPF5buSHsLHxvhSokw6EjQPS3lR6iWElKADBTh8G2kagew/kQDxPGJ+HgA5/QiC4ryxkmOoDgb58iUA2hPyyjOPzYBEiVboISO20JHrW6U538l35awwtQTSAYGVZon60A4pFCPOEIZ4RCFXp92VAyiqOA8qVaQZESrQ/hIF5QgBtXABhIEdkacIdAtDHSiC5no6MIFMOBAIITDcIE3pAs8SAvsQq7UA8z8rfEZoxfGSjFMiuyPRAXTrHONAnAIQmPFGfJNAS+NjheYtQpdmRjRRQOAWH6R4OyD2y35/GoQTItWE0gFBpSQCtqA8a4XlOq/SHFND+TscOwTA+iDJChX/E+8K7XpoCIFSCwjAF7mOHvWSAVhjoTgL6Jwn0ea8fWDDbfXG/GlUhVBJAAenzXg7Il6AjMcOoTwJoRX0EIJRjKlAc4ORxHgao///s9/+UAMXtMJBhuPygDKOtWAwhZ7PGQ2DBsbFyIPNnLKXZrqJ60hTtlTY4b16+ydUgsqEKJu3e4X6xXfkIBPpBIYQ8z9rf4YF4M/ZBB3JjCO2YMpNcTcAj3U69csB//SpbpFEJghkGej+FQCvg42LKdoSuUDvvi1CuSO+A4ndNCuFxi2jjVn/d8OY7nCwQKkE8w6hPHmjNgK4J0McMUD8C7Nf//t8b0FlJANFen+lAHycBtEsw8ybfzPsSBLvRog8DipvzCGgNBsDiniIYDtznWKajePOvv8CKJ1e0Y0BFsH5gHx9zj4HihirOMMFHB1ozHw3oUyHQ7HfUfvFnG+DDW7H8qHP39vkIQtsZfrAvBYqrnwZa60CgnR+EEv0ge9rREiAhUrTIagQSGvmYYbTzt/Zj7zjQOgd0dhrnJKSBhjNt2l6QyQChWkPO25EbEetKVyGQmGGs65cFWiOgFQA6rwBCK5ASwo27Cf+EN0j4dPgH0IFAhsVJlwBoVQi0xjx4FH4cJBSLUBaIrQ59ApgXb7J3i0BiRzsJ5OcbaD5+cFn0CUBh2YSYikCkSvdCBUCZqbuh2rB+kMHPkN9E3ymEgXAJIhm2qgfaAKAlBQI9oRIgbd3gHbTWwNqUBGKfoAHxbvSdn/jNfIbVHwV0WAjEfl/6fDTfW+kHpScnqkUIvpvPMNKGhR1kaaAtB9qoQKdhduawtZEDYibkLwNjRe4HsUNq/K8qINSGyQHkgbYaUJyjIAPFHMsD5dYOPMWwZ4kTpJlxAZDQyPsM4xtYBGhbA0SLUAGQ+rX9ygn9JNLKY2T+jgVAuA3jGcabqK0Xcj55oCsAdFgEJP26Bj+MmnGhR8lPQiC8Ye6QiTkQdgWhAForQHEgMATaYKA4G/GcFaEMkLw+6Ka47lQx1ZfSihB8CcwwwWdNlw0VygKFM1ec4hDKAiV6MaYGSHooPqEIiGdY3L0hCRGfEqB4ojzfV8wD6V/crXkWyGgPpT6FAMEMg71oxYeGkOLjp7NiINSOjQDyxSUHlJslVAg0ZFhpABEgLYAo0FUlkFIdYKNuujxQZ+irOJD+MQwItvGajzOAPnqGISCaYzkg/ZuHuCgAAiEkvZ8cQhRoKEEwwxIBhIXKgOZtQPLdHQiLNJDB/9HeMANku9FiGyb7eATJJwV0AU7DMLRjLUBx64I24SpQfEX55yCgoUbDDMv4gDrDfCYDSm4EiEGhAYnhhoESreUApGUYWOWkkPiYBIRz7CAJlFihGEVlQKYreL8yIDfpckF9FIQyoHDSgXPSjmWA1L2hMF8KgLyn8nbJ7oQHGnpB6AyAcOdGJoTEh9YiEO5M54C0R2DXpgjIhJeVfhIDwufY5D4JIblAISB/Yg98Lpg0kD4KFRfc0hvqcLLcKGzjekGhDYMZlosTASjuL1slgIYcawVCq1t0Q61AZUAxw/QAUhzY3WiHawRCRegkD6SXIFpWxYoj3UoEZHLXfgTyGbaUAohLKD7DA2sZiGzRtwGRqQllQImpB2KVpkC2BPkTB/gzlCXaqpJFBgI7hTJAWrPTyduoKSD6IvJ2JUBChqUac0EjB2TPcQZzbBIgVnKE1mwaIJRhPICSQOKuNQaE+4p5IHGV2CSCMiAtZ5UPgkB+Q8yfJ1oJoBQQ3a8f7gwzNcUc04ESg1vZ3UVAmXdLHT2LQOA0v0IAJYD4kQ8V6KIQSG+aTUfqbWEEyQHpuww5IFCCcADFLXYdSDg0hIH8aT1gjvVFKA3EVtKtKa1OxTVIbc3LgGCGhQCS9/loPnzwi58RxYGOy4DEb07qrcH/kj8BkMZQCOQzDASQuNdQihRBaIWA/BnOLuDRnxIg+tUNT4kCIOFV+JlpoNALiiUa+uD9zgRiRRYRSMyxJiCpepcBCTlWCBRLUDixQuLIDgXhC3geAEItvStCRUByY9QGpDd/eSAQQCOBVvFpy2U84cAcb24kgfCPLa0pWoMsUHiFWNylrTEJCJxIm/hUAsVlKYeQL0JJIOXbCs1bKZARXyV8XgIoBhA6+r6dGMgVIQoUrgxv9n9Xf2uheTOJf/A9alzeGH81iTiPLwLZva3gRNoPBERzjADFK8Mbg4BwPRoDpFW2z3sDUH8KbjvTCL7a745G50HeKkBVPgAohpAKFK8M/5kCofZGBcDFSQBKtI3DaaaHeXz2igkUCNRoYQBQARAbDxvuXGhFiACB60PMzH8SQPS+LJDUWrGPNv7k2ypQLEHQJ44hSwKxyZgy0DwB1IVThN+8JDUofGEzHoiVePtnBJqJKSZl2D0eplkCRIggENqkd7MSZKD+Ij778ua1VkUMeY74qNxHsA8Yf8GFS3cebg1I8MHDEDM+WGiphFAaqJ/ks2/Y9Am3dtmdrQyIt4G8e2Hcicq7/vfpp26IQItWoOVSFFouSQjN4777oZ0XgW5evkkC4XuqgLoSINuMYSC3oYFOFH3fCrTUgcDBjaEIiUCpOW6kQ0ezTQQiLzCSDwIaJswiIL8lBk4OBHzQUOhshgGiJQBaSEVIK9KdGEEd3+nVBCTveB2AwNUkIBBqxHgANQCRBefYGKCuk/cl+kaO3JSAlD3TNoL6mWNfX7/qRCCUYfdTA+EQagPi6UHCRAJiL5B8Qor5y9j/GEDH4ndNrQY9dNMApM5dUd75ewChHBsFpM7dKAZSjo4VA0Efd2qOiYAW5UCpADLsqWkg+vzSEBKBlgjoy5cv4eQckwG5q9O7+au1QMIKoxvkPzJQWQgRoOsk0P1YoOVkQOkilAWSDzPnga4IUPShQCUdRT2EpgfCqcSBpDZsBNCKA32ZBGiJi5A/FUwLkBJCBjxjcqD+oGHcVN2Gkyc9MNBJG5AsJAPxp7YCzeMFRXAA1QGRs+k8DJC4JgVABj2jAog1YtCnCAhulspGAtBpLVBoosU1QasvZphBb/KDAcUT344ASgSGDKQ876GAqBD4gwJpITQREHq4EAi89PsA4YNAFIgJ1QFls8CguwuA4Cu1/J0SiI5doD5jgErqKI8NAUgKoNIq3Q60Rj7wIDwCokITAykhhDsCUgCNBWI+HGgtDEX8/kD8JgNSn/zQQOsioMUzEBN6WCDT5fe3KkDoZWUdoR8ASO1JFzbEFIACyT6lbz8l0PqRgGibZsD/+KM/HtCiGUg9v/bDAikJ/P2ASjdWC7eWmAEG0nxUIGXw9RRA64JmDAOd51JMnuLG7jTwX9N1YHi+IU9JA+nHJNuByLjFeiBth5mRjVJAoTTzCc4FQF6nBKigJw19wOZHGmhRDeTXNgmE4kQEykdiHDHUDLQVgNAUl3wR8jUanGspD4TDSK4dBvxjunjUwqCHVSBwSsppgTYIaF0BlD8uhr+qtgaCEADSfbC/9qkTAm0eGAjkgNa4VQL55iqZwcVA9yLQ5mGBWH222weqpwaUeH/eBpQ18w1AmxqgkkPP8sWylAyDGBEo5eOflv7YHJBwWAwAbSjQWgRaEJ8yIK0jrV9RLlTlcM0IWKdL3+mhgVblQBdpIL22KkQxhGA7piWYFoukbRCAxONiEtBmw4S+D5CcGyFg3EEhkwggoUtYCUSEYAnaEB94fxoI+MAheA1AShjZtApNF2jHsI6XawIix+bZ8CAKtM0DLXQgcZRrCVAnhZGBdwtHF9GrJgDaFgNta4GSw4CLv7+0oYaBhI5CzQcIQGx8kLvuSixBGGhbDrSYHKhjYQQfZu9QsFHXAuQXAoQCCAh9ZyC+2ka4yZ/XCsRHmDEgKYAwkFKlRSBpKkIdEEmceFu5exRQHMTJhOQS9EMAdTA8QKE2/NGpgIQQegigs8mAYozYOg0qdKJf+ZBAm4cC8jN6zc2/qoA60G6Z8I/SpcwA/WHMizIgPhkKA21rgeAYVxEozOg1e7/WAnW++xyAdJ4E0KX52152iQCdjQLaVgIpMw7DjN7+Rj1QF7fDTCp6UkBfX/d3z+zXQEBxW8NujW0oEG/l24DmKlCY0bvzuWwCitsipU+kd9+8VGoQn7IKQ2gMUGZTjMx69in2WEC7z91zM1ZzQOTCKw8AdPoDAs36ufN2UrgIJM9Z/V8C+sXEr1EARE4r4IBoKw+u38eAEns7pgcaX6Rnw+faaZkCEJv1XAvEI0jb4foAQFM08/Zzb16yk5uA83PRMy9sxwAp+xMfAGiajuLnvVSKJc9tkgLSO4rfCWi6TY2Z8VN6OVD65C8jgZYPCDTtxqpRm/kHAFrmgPjJTXLfn+sY6fbUuzvQKd6W0vmVNkFo0wq0mB7ou+0wi6fhXCgh1AK0FIHmkwF9x12u/gRUzUDr7w70fXfan7J2ngp5lnjIkAcQAVouiZAvQhMAfe/DPuVAm2Kg5YMBPcKBQ3C27eFk2yVA6CyveaDlVECPcugZAsknmqwGCjBxJtkUQI80eOFUbMaKgLyPAoTmuRQD/XDDX07FZiwDtEkBQR9wMkUylUUBot0Yv1bqGscAIimkP79uAJUAtM4DbWDrT0aSY6BVPZDQSD/iEDwAVN6MgYUBEZ9wTmACpBwX07qEjzeIM145C51PuhRorQCtCBC8SpRymkDpq/4Aw4DHA+E5hzSAQI7VAv0YA8njdWuym6t6ADGglQR0WwVUsAkFVs+1Y+APWUjNYB1I7gi1AvEAckKxnS8B+oEms5wUAKlCa1iCpgMS6nEKKGQV7wUVAAGjBFB6ez4JtIJAyGcd59XXAJXuCMRhYsD/EiGkFXu9mS8C0oQUoOATHl7gK9KmgH60KZngCpnVQOsU0BoCLX0zlgfKNs8PA5SOoKmAlhxojYrQdEAG3zLxOUZ4eCSQdmhse58UIj4YaL1e4xzz7Xw7kLwKMWIgkCJk6k8skAKKR1ergFAAsctlpscoakDkfnYzAURuFrx7KRAYwCAJrVNAawK0jEAXTwxIE4o+UglaIyFbhKYD4mvPgGSh0UBwAMN9KVCyBIEcs+38BEB8XQx8Cgsh9MoGoLM0kCzEAkjIsPgsAHSVBqJdkgwQDBcMJIaQ1gQkTtEFLkOrAd03AoFCjjtCGaBcQyz81hkg+NKCRgwB0Uv4qee1x0SSDwGKz7Q5FjtCibkaBesgrUoOCNzXCERGmW35jI08EC5B8JkA6LoV6LFONFkDtC0FAgEUjt3HZqwJiK0+XBODnqGHUGGNbgBiIcTasBKgOw8knvS/DMjQOwuBYEegAYgO5KQ+LISyJWiDgVYTAYk+ChB/8mRAWzpzlYXQIwEZdl/8l/xnUiA4FFg+bzsNoSQQyrCYY5MDGXSDA7GntwKdFQDd/wBAWgAVAukHaMcBiSH0CECPdNkIDIQmrqJznJAQqgHaVAElQogPvMsA0RxrufCIAnR/T8/UJYwrL+oGYaD5CKDHuXSNDkTO9SbMTIDdoGUeaDESSF2NcqBJI+gLFYIhxIGWEtA2AK3GArF5KobckoA6+oKyY0oE6LQQ6L4aaFsHNBsuX6UCGb6+8IahtwUgZfSUm0l8KV2p9/j4pADoy0igtQO6TQH1l/C8NH/KQIb90E1A8nvbmcT95Q35lXqPNKAvHEi6Lu10QHa63/4LcSVMR9eOpZEIRF5hOuHN3UxiO5Nln16IVgLaciAoJLZi3wlIWvNCIKMA+ZnEdjLdjF7jsBFoUwS0aUoxoTUOKy/lThIIv8KQB53ccCFaO5mOXQQyAs2TQECoAmgjAyljFF2R5CHk2iYjAhn4r1EfBgHI3n24lLEtP+w6qzKQr9Hfvn1L5NjEQPu7H+/mj1d6qzseiD1aDbRiQFioCGjVBBRqQBJIzyEFKGRdDqgsxTDQt29ACOdYDohvreaAwi9IgXgVUUtQ5nGx9Q9AmSJ9nQPCIRSAqFAzULhSrtbfgUHQBCS2gQEo18wHoA0FqguhZiCtBvGejJ5heo6RfrgAlOsoJoBYDG0SIbTiQhFonmzF9u202tRvzVvqUiDhrdytvlsxTCmeSZsaRUDfaJKVAMHjGisOdMiBwJfXqoW+pjqQ+DKxdRM+dAA6LQUqDiEEtAZA15VApL0xY4CU/W0lQGe1QFUhNB2QX816IGF3dBXQeQYICTGglQK0Bn3uZROQ9M2VkRgJoE6epwmatxTQEQWiHUWxCsXIYEIrLLQOQHfVQOwpNhDEYktJ8ZN4hnXgQ1JAh0fHwx6zHNA3HEK4CAlCa7is6oGkn9w/VA+kHPAZPiQPFDbn+caqCrTNAQljzDyQHbuQAhJqMVwlcV1SQJl3k3ceFAHJQgAoCK0oEBvHaYHC4I4EkIt66Qn6nul0BEkZpn9QEZAmFHNMA2JCKzC6oxxIfty01iD97eqBNjLQNxhCtAilhBhQ7zMNkKG32B3TAi34TnsmhIHyQu4xsimWBVIeNniHYxGQNI0XPDYhEBHSgfCEsTCSfD4eiNTbMqBOQIhAWvsvAN0thGPzGaAiITzALAukTwOPTTNZldSNJJD0U7QDfRNyrEBoGUtQAPrUChRX97fdUiiVCMhaoBUb/iIA3aPL2YhAfOr8bQWQ+pO7rYbf0CK6hKQz4WWln0SBTjAQHd4hh1AeyBMtfQDVAanNjul+o0sSqEtEpNzFZkCn/kRmwsUj5BCCRUjuT+MlAPlx9lkgeY2E8LGLCsSnQuc/CAJ9OjzaAZ0FIHrxiCQQFUr4oEaspAbpKyT5CMXIA+kOnRaqBGgoQhEInlRaDiEORIWki0De4kYsCaQWISG9CBEBMqFEq0DivQyIXeInHUJbnGMYiJ5oKZzmDZagJiCjxY8OFO9T3rAKCBYhIETLNCtCaN8iOZ/iYuFOYhZni5UBid9c93FChr+JfMS569RUVoFilQ5CpTm2loH8coem0xUBid885WOFCBC4S5aQf4cE0JLMyawGkn1iCXJAB0kgrX9SCQQDSGmulMRDQMcnfjYCOEPOFsYQybEIRIQi0J1dwi043fC4GSjtg3uMnd9CFXoA1UC7dh5cHGHNkqwW6I4u+Cq9fSNWAMSekfNBPUb/BsKGG3xCFohVaXSSJSdUAbSQgG4p0KcCIPbdswEkA4krrn4IfckBBAo9oXgqPCGEENBGAuI8+PRTfYblgIQftxLI4AokA6VOjSYD8RASq3QKCLiEBVxq/rgESCgPuRJNgIxwsIe9o95f14BsCK1oCBUArTEQ4QGXzjo+KgUy5J4aIOHEUuyvKqBQhEiSNQJRH5RhhUB0ffI+Ucjv5EgCsXsUoF4ITqpz4wxbgajPPPiEErQD+pgDoj9vSQAFIAOYVCGtBIlAaPL8Mozw8UKVQEBm7nzg5Q37RiwHxPKjBkgYyqgAaR8NgEARAkCJEEoCLQLQnPmE05f1GVYEZNDfBTy/2bzyPkkgtQRhIFCl4xlLoZAAJDbzBAjz7HziaVyHDCsBon2YkgCCp4/M7OrpqoDQKU5QU58EWktA0OfaLoNPHZBpAIJnQxb3s+J3VPfrxpsfLRDMMZpktAiVA+ykx2UAAAtBSURBVF1fBx7r4/YmFgHhFRhulEUQAE4J6RnGgFiOhSQTc0zemgdHmO98ww58YgC5Gl0E1LUDCWf6IEDiw0kgm2MkyXiOgcMaMpDvGUYdFEC2Rv+jArkrZt7ssuVFHVAXgdSdZOAd7Ty6z3t9Xr5IANkiBE5ZereASSYCCQFEgKDOjodlmArkrph5+fvf7pJN4CsX+KB+kLKTzP7by3Thklk60EEEUkIIA30pAIpNF/YBGaYBuStm9uPe+0s2kRXNJhjuByWAhjPgD7+Eu+6SBmSrdMgxG0JRKOQYBWI+GIiEz84HZFgCyF8xs/9dQZUoAeo8kDIMnQK9sgPsZy+0p0SguDkWQ2ihhVAxEOBxPjaAbAnSa9AAdPnrf4erVtJSkvdRxjDSu4Y2sgfa/3e8bpYA9I8vQrhM4xAiQL5Gr5NAmMf6+AzLA836RDOvX7DGSBcyJlw5Ig80NPL9B33e+/3vndIr5UUYyJZpHEL1QNHnAvpYoJBhOaBhYpud+4PWUo0ff2w1CxRS18TqgwsRAYpFaMgxJoSB1AzjQJEn+PgMywMN87bMH3/y7ooYPeHQczmQAUDu8pgiUChCoUzHJBNCKAKtS4DOoc8QQK4EfcjVoP7Lm5dvhA6vGEGKiQI0vCsIG9zWMyAlhCSgL2qGkTNuAp+zwccGUChBGaDPe/1POhQiYSVpeiVMZKEhiGxz6efxaUAux1wIKUJha+MLDqDVShzL6naP+eLjeKyPy7APGaButqudX/nUAyJkb6SCRgUyLoKGOYaJIm2BXJkekqxvyaIQAPrixyj2QN4HnnscAqk+tkRngfoeo3ll5J0WceNeUCgAsvDug/aHU4ZoQB98joUQuqAhRE5VcR+A/LgpAcgHkOOx+QUCKAVEv6r4xIRCHii1oUpeY4FijrkQ8kIy0JYAhQsgYCDgcwIDqArIdPJOm1FA6rvy1+yAQjsGQ+ga5Rg6GwwLoLigk/5euMYL+MAMKwPqlEHyJvFn6rHkm0ov8UA2hE6kEIJFSMwwDmSPEZL4IQH0/mcB8jkWyrQXug2nB4Y5Ftt47oNOaRsCyPGEAOrb+AogcSj8OKDU1AT6EgTEq9CCTbELAeQHcyAfCiT62AwrBFLq6Tgg8V75JT0QzTEUQmSC1D0EEgaMo+uLCD4xw6qA2HPHACWnJtCXAKAYQqGpv8PTW/ypF7APvFrfQgIKPiGAqoCk1Un+XfLkZIYhoPeD0IHf3AAhFHIsCxRH1McpK34PIvYBGVYKJCbEeKDsR/qb71GOCSGEzw8MmjA4EFoCCttfxMdlWB1QJm1qgHKdoE4FclXoFFQhUoTuQycxDGiNQksEFPeQDT6+AMUAKgaSfvFRQMJT9FdYIJ9jNIRCOxZHlkMgMl58ic7LbndBn4T4QQFUD5TuHlcA5Us0AfIhdMBDaM5nSHEfKIRmHJyFDbDoE0t0DRBfpXRAJf/Ml2gVyIWQq9O+pYdj793ZlQjQggFdAaAjUIBgAL0rBuLrVJBE2t8lAcSAQjsWQsjv9sCnUFZ8ohC6usgZDCDg0wBEV2oMUJcPIBEo5BgMofk8FqF4BWx/rpLhMDwUApOeAlDwAQk2+FQAsbVqByoKIAIEcwzU6YsL3I5tYACFgUCeKIwgBxcRO/VbqNFnBFA3DZD0uPx57uZ7GEKhCoWjiGT6xgYGkB8G7YTipCcApPnUAdEQagYqCyAE9A4DkRACQ8s3mzCiLI7VBEJxUg8sQbgAwQCqBopfu2rLjL+yGsjlWN9ZhCEELg0JgNbxOiuCEL7AkT0M5nxoANUBoRBqBmJD77WPAzffvVdCiObYmgfQMJQVCqFJPadhJyv2aQHCP307kPio8mnu5jsfQrwvREJoTQPIDYMGQmjaHAayPiCAKoHgb98KVBpAEpALob6p91v1PoTiDCAyQiEswqynMNQlbGFQnzog9+ObJIDyp79DG5SnfJi7+Y6FUEwydMmfcHCHDNREQjzDaPw0A8W14y/MAYHXlQSQCOTqNAwhMLbcD8hbwQBy43yB0C25zqPbyQoasOjztg4IrF4jUHkACUAshDwQnOCCdhuCkdBRCM16wkDApxEorF8rkPyQ+Fng5jsWQp/EHFuu8G5DOJLeFSIyLcwO19QS7G0p0KUbFvVnKLFtQO7lr9lwsgogKYRCji25zzCONQj5eXPgetcB6B8eQFUR9HnvRUyyJiAXgK9/edPNDB+VmAZCIfRJC6F4GgU8EBoKxQACQDHBYgBVArnhVG5dMz7iHU43nlS7CQiFEASKQrG3E5YoNOcliCWYD6AaoP4s0+F7ZwNIfAqsQPak0YkFAr19F8p06At9ojl2e+d3acQW3o7zDUJzOK8QZZhUoSuB9u1PTqd5qx78DvTK/ZoIequE0DEaW842SOMw3yA0V4FAFzEGUAXQ571XYD35UeMsEJ7/fJmt0iIQ7k4fgXGvYVBnPMnEHAyjh0J03lwigCqAYkrY5jp3EIgVbXQ24MtsjcZAagiBHHOTpKLPPPpAIjzx8ggeSUU+lUD7/Uhmv6odb+gLNj1MCKB8/GhArC8Exr0K21tulGYQihPDwKQVBehtFVDIsI4mSxkQSsxZgQ8BwmUabdSDEMJbE2AY9AUSQhl2mPIpB0JjmKVCnQZCr5iR0YjyIgDhEApl2m1u9CF0S3wuwgKE4rwwmmE0wSqAUKsszfdOAqEXuP5CbkkCgRA6QTNcyEkU7CjoC5hmaGIhABIDqBwI9+sEoRQQfvrMbrZU9YOEEDoQQmiOfa7CIPog5CevwHlziQCq3VhVVjkDlJhYl/oIcDMAkYYM9aavfG95znxgELm70bSnj2Q3WfBpBor7Bw2+g6+gafNhQHIIxRyzw17xOQKCDwwiMLEQZ5gQQCOADLmhAbEnFn8CuCkAkUGLbizMNfMZBtGfhSAiEwvDiF8lgNqB2IorQM0+HAgKSWX6And1oA8RohML9QAaAQRXHXSR8Qqadp80EGrp43H6K9ATRD6QyE18glvyagCNAYInHJB2EKFhvvU+GhCpQoc4hK7QKQLCIPEgdO5nhp2yDONN/Fgg1IYJm/fo4YZ3BzffpkPoOI7qjC35eZxk4IiAzxmZWEh2k00ERIRQr8iM9ZGAkg3ZGa/Dfg5GNHILnDcXB2wKPiOByGk9DFjgGjb56ECoLwT2LEKh6HMyLFjoNBySj7NWpAI0HijZyWmvz/QdA1AqhE5jHQ4TUB0PJvITw1AnSAmg0UB6K8/a+eo3BjcxEGjq4/ZGEAITdIGPJzr1M5+OyawVuBtxUiD9WKCwyV/1vuDmWywkNmQnoBDHGZbDEOjeDwqRmakow6YH8nMrpTVMz+fJvC24SYD4aBgfQrgOex5MFCfO5TOsHcidPsdespGdasGu1nDv8MRw4HE0kBpCg9ApKsPQxxPZBU6cS2ZYM5A7fc7+TmfYlcaJ3D3uifY12f3QpUDygKoTX4fBBMJhBPQREWITC9UMawVyp8+x+2Fndm81NAq3L8GZFbKHCnWgR1wafezpc8Clq8mKkCf2S+GORAnoZ1wgULK0BKDskUKyPAUgd+nqIiB4WKRoeQpArkgXAWWPxdPlSQD1Z5T49b//l1p1DxQPPBYuTwOoX1yXqF/ClazZE6sz7AkBzUJs9A05TSX3RHzypJLlKQANXb8oMkTJ19cv+BMbStCTABpOoEnWXAGq7CV2Pz2QusyqQ0VZnibQZcHw1cLlaQL1KVbbnivLUwVqKMfy8mSB6ht0eXmCQNLJ/tqXJwg0bE70p1ieZHmKQMLJ/tqXJwk05fIMlFmegTLLM1BmeQbKLM9AmeUZKLM8A2WWZ6DM8gyUWZ6BMsszUGb5f04mNOf3H5WYAAAAAElFTkSuQmCC" /><!-- --></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">par</span>(oldpar)</code></pre></div>
 </div>
 <div id="conclusion" class="section level1">
 <h1><span class="header-section-number">6</span> Conclusion</h1>
-<p>This is a bit of a hack, but points in a direction for getting your RMarkdown script to be checkpointed.</p>
+<p>This is a bit of a hack, but points in a direction for getting your R Markdown script to be checkpointed.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># clean up</span>
+
+<span class="kw">detach</span>(<span class="st">&quot;package:darts&quot;</span>, <span class="dt">unload =</span> <span class="ot">TRUE</span>)
+<span class="kw">unlink</span>(<span class="st">&quot;manifest.R&quot;</span>)
+<span class="kw">unlink</span>(<span class="kw">file.path</span>(<span class="kw">tempdir</span>(), <span class="st">&quot;.checkpoint&quot;</span>), <span class="dt">recursive =</span> <span class="ot">TRUE</span>)
+<span class="kw">unCheckpoint</span>(oldLibPaths)
+<span class="kw">.libPaths</span>()</code></pre></div>
+<pre><code>## [1] &quot;C:/Users/adevries/Documents/R/win-library/3.4&quot;
+## [2] &quot;C:/R/R-3.4.0/library&quot;</code></pre>
 </div>
 
 
@@ -196,7 +228,7 @@ checkpoint(&quot;2017-03-28&quot;, checkpointLocation = td)
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
 </script>
