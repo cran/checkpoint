@@ -1,4 +1,4 @@
-260248d7e3645701d0ce7080e3aac25f *DESCRIPTION
+0252aab97647a0e3eab8cc9986582170 *DESCRIPTION
 7adcc5e5a92b753ba5fc1ef849c0ed80 *NAMESPACE
 36ffe779cbf8acae6923ec9f7ceb2acd *NEWS
 0a338699889742443fd99061960ced3f *R/access_date.R
@@ -6,7 +6,7 @@ c715843d4758c012ef71895073442140 *R/checkpoint-package.R
 fe500134b5041f745301da6690230805 *R/checkpoint.R
 f9c5192a7ee5a33815d7c8f74b3dd2b7 *R/checkpoint_internals.R
 27b8fe46665892486a360378838d388f *R/checkpoint_log.R
-1ff2f2a0984200da9f3ca2dc211861b7 *R/checkpoint_paths.R
+3cbfab4be0488551b55dbce0b12b48f6 *R/checkpoint_paths.R
 ad2bfff78d3f70f941696049a4f33583 *R/checkpoint_remove.R
 2b4eb07550a75e4143516cc79d8ff055 *R/detach.R
 d3e6d7f8d5753cc85c5a04bddc499cc3 *R/fixRstudioBug.R
@@ -20,13 +20,10 @@ bcabd998a30cd86d8e8310f2c7a4fa2c *R/zzz.R
 9cdfdd7d681b0ef32ea6d9df97d59c71 *build/vignette.rds
 6c7d87c8b162db0d47c6bba2b9f5f21d *inst/doc/checkpoint.R
 0601de8af90ec7fa04108fde90c6e334 *inst/doc/checkpoint.Rmd
-e21d6ef115f8a1092d3a9d13edfa3f1b *inst/doc/checkpoint.html
+8fcf6cd9f32b6f35a3f20f40bd97593a *inst/doc/checkpoint.html
 ba90ea18c35b45d1386b68398d130c2a *inst/doc/managing-checkpoint-archives.R
 95f2ba77d0720ba015bdcbee0a7098c1 *inst/doc/managing-checkpoint-archives.Rmd
-f6a5797bab84a59c237a45911f75b65e *inst/doc/managing-checkpoint-archives.html
-03edc1832c6c786916f134fe5ddcedda *inst/doc/using-checkpoint-with-knitr.R
-f3e2ff771a965525814b57400017d588 *inst/doc/using-checkpoint-with-knitr.Rmd
-2e30e2279aea29ff549fad785ae08547 *inst/doc/using-checkpoint-with-knitr.html
+fe1b08aa37badc6100ea0aa3e0a2572a *inst/doc/managing-checkpoint-archives.html
 d3d32b63ec4f1f4e62c70efacc2dd41b *inst/examples/example_checkpoint.R
 46ee1850df853c60278fabd95898ca45 *inst/examples/example_mranurl.R
 54a2f27a9b16582374aa1cfba8543e34 *inst/examples/example_remove.R
@@ -45,8 +42,7 @@ c8fba087f92f3bc310406b1381aff733 *man/setSnapshot.Rd
 d41d8cd98f00b204e9800998ecf8427e *tests/localMRAN/2016-07-01/empty.txt
 d41d8cd98f00b204e9800998ecf8427e *tests/localMRAN/2016-07-02/empty.txt
 d41d8cd98f00b204e9800998ecf8427e *tests/localMRAN/invalid/empty.txt
-3a6d248bb94701363cb716fe3db369bf *tests/test-all.R
-7ec15c16d0d66790f28e90343c5434a3 *tests/testthat/framed.sty
+eb1840e8f453edd710a45e48ff761c9a *tests/test-all.R
 d6d08772044b55ac1888b3442c21c2d7 *tests/testthat/helper.R
 7bc94b1c918339889aea60a49b4616e8 *tests/testthat/test-0-is-404.R
 0f34dd95c4b2af26b097a62300853fbc *tests/testthat/test-0-snapshots.R
