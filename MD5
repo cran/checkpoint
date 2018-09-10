@@ -1,4 +1,4 @@
-0252aab97647a0e3eab8cc9986582170 *DESCRIPTION
+6cc8d64c7579cdc2e770f1685f4b3234 *DESCRIPTION
 7adcc5e5a92b753ba5fc1ef849c0ed80 *NAMESPACE
 36ffe779cbf8acae6923ec9f7ceb2acd *NEWS
 0a338699889742443fd99061960ced3f *R/access_date.R
@@ -17,13 +17,13 @@ af33a360f7dd0e44edc0ed723999d519 *R/scanRepoPackages.R
 b3135e4f0d4c8b6d612e9da574493d7a *R/setSnapshot.R
 b9e056bcaec10844b0aaa7fa9312ee93 *R/test-common-functions.R
 bcabd998a30cd86d8e8310f2c7a4fa2c *R/zzz.R
-9cdfdd7d681b0ef32ea6d9df97d59c71 *build/vignette.rds
+05684dd41a113cf87e65d0c57c9eed88 *build/vignette.rds
 6c7d87c8b162db0d47c6bba2b9f5f21d *inst/doc/checkpoint.R
 0601de8af90ec7fa04108fde90c6e334 *inst/doc/checkpoint.Rmd
-8fcf6cd9f32b6f35a3f20f40bd97593a *inst/doc/checkpoint.html
+15fa18b83572248fb5493dc1704998dd *inst/doc/checkpoint.html
 ba90ea18c35b45d1386b68398d130c2a *inst/doc/managing-checkpoint-archives.R
 95f2ba77d0720ba015bdcbee0a7098c1 *inst/doc/managing-checkpoint-archives.Rmd
-fe1b08aa37badc6100ea0aa3e0a2572a *inst/doc/managing-checkpoint-archives.html
+c085d84c523a8f3a088b74e6a631cefd *inst/doc/managing-checkpoint-archives.html
 d3d32b63ec4f1f4e62c70efacc2dd41b *inst/examples/example_checkpoint.R
 46ee1850df853c60278fabd95898ca45 *inst/examples/example_mranurl.R
 54a2f27a9b16582374aa1cfba8543e34 *inst/examples/example_remove.R
@@ -44,7 +44,7 @@ d41d8cd98f00b204e9800998ecf8427e *tests/localMRAN/2016-07-02/empty.txt
 d41d8cd98f00b204e9800998ecf8427e *tests/localMRAN/invalid/empty.txt
 eb1840e8f453edd710a45e48ff761c9a *tests/test-all.R
 d6d08772044b55ac1888b3442c21c2d7 *tests/testthat/helper.R
-7bc94b1c918339889aea60a49b4616e8 *tests/testthat/test-0-is-404.R
+b41438a1c12593db90e4a538d1cbc861 *tests/testthat/test-0-is-404.R
 0f34dd95c4b2af26b097a62300853fbc *tests/testthat/test-0-snapshots.R
 4909cb29ead4b9600190020e7328fa8c *tests/testthat/test-1-scan.R
 ad517d66e2bfb7d08f4895881828b4fb *tests/testthat/test-2-snapshot-dates.R
