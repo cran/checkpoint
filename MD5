@@ -1,4 +1,4 @@
-6cc8d64c7579cdc2e770f1685f4b3234 *DESCRIPTION
+e6351301cf6bd17f637108f0066d30ec *DESCRIPTION
 7adcc5e5a92b753ba5fc1ef849c0ed80 *NAMESPACE
 36ffe779cbf8acae6923ec9f7ceb2acd *NEWS
 0a338699889742443fd99061960ced3f *R/access_date.R
@@ -6,7 +6,7 @@ c715843d4758c012ef71895073442140 *R/checkpoint-package.R
 fe500134b5041f745301da6690230805 *R/checkpoint.R
 f9c5192a7ee5a33815d7c8f74b3dd2b7 *R/checkpoint_internals.R
 27b8fe46665892486a360378838d388f *R/checkpoint_log.R
-3cbfab4be0488551b55dbce0b12b48f6 *R/checkpoint_paths.R
+e46c7e05b069ab68c6c8de216bab6194 *R/checkpoint_paths.R
 ad2bfff78d3f70f941696049a4f33583 *R/checkpoint_remove.R
 2b4eb07550a75e4143516cc79d8ff055 *R/detach.R
 d3e6d7f8d5753cc85c5a04bddc499cc3 *R/fixRstudioBug.R
@@ -17,13 +17,13 @@ af33a360f7dd0e44edc0ed723999d519 *R/scanRepoPackages.R
 b3135e4f0d4c8b6d612e9da574493d7a *R/setSnapshot.R
 b9e056bcaec10844b0aaa7fa9312ee93 *R/test-common-functions.R
 bcabd998a30cd86d8e8310f2c7a4fa2c *R/zzz.R
-05684dd41a113cf87e65d0c57c9eed88 *build/vignette.rds
+9f95a0e36afa977f29b9165793b9cce8 *build/vignette.rds
 6c7d87c8b162db0d47c6bba2b9f5f21d *inst/doc/checkpoint.R
 0601de8af90ec7fa04108fde90c6e334 *inst/doc/checkpoint.Rmd
-15fa18b83572248fb5493dc1704998dd *inst/doc/checkpoint.html
+75ff141de68d69370784288604a6f329 *inst/doc/checkpoint.html
 ba90ea18c35b45d1386b68398d130c2a *inst/doc/managing-checkpoint-archives.R
 95f2ba77d0720ba015bdcbee0a7098c1 *inst/doc/managing-checkpoint-archives.Rmd
-c085d84c523a8f3a088b74e6a631cefd *inst/doc/managing-checkpoint-archives.html
+73563c51d3f76614a085683e026391ea *inst/doc/managing-checkpoint-archives.html
 d3d32b63ec4f1f4e62c70efacc2dd41b *inst/examples/example_checkpoint.R
 46ee1850df853c60278fabd95898ca45 *inst/examples/example_mranurl.R
 54a2f27a9b16582374aa1cfba8543e34 *inst/examples/example_remove.R
