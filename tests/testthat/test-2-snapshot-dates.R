@@ -2,6 +2,8 @@ if(interactive()) library("testthat")
 library(mockery)
 context("getValidSnapshots finds valid dates")
 
+skip_on_cran()
+
 
 test_that("returns a list of dates", {
   skip_if_offline()
@@ -47,4 +49,18 @@ test_that("works on local file", {
   expect_error(getValidSnapshots(localMRAN), msg)
   getValidSnapshots(paste0("file:///", localMRAN))
   
+})
+
+test_that("fails on empty or missing local MRAN", {
+  skip_if_offline()
+  localMRAN <- system.file("tests/emptyLocalMRAN", package = "checkpoint")
+  localMRANUrl <- paste0("file:///", localMRAN)
+
+  opts <- options(checkpoint.mranUrl = localMRANUrl)
+
+  expect_error(
+    stopIfInvalidDate("2015-06-05"),
+    "No snapshots exist on MRAN."
+  )
+  options(opts) # reset options (a bit fragile)
 })
