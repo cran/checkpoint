@@ -1,9 +1,9 @@
-## ----setup, include=FALSE, fig.asp=4/3-----------------------------------
+## ----setup, include=FALSE, fig.asp=4/3----------------------------------------
 
 ## Create temporary project and set working directory
 
 
-example_project <- tempdir()
+example_project <- tempfile(pattern="proj")
 
 dir.create(example_project, recursive = TRUE, showWarnings = FALSE)
 oldRepos <- getOption("repos")
@@ -34,7 +34,7 @@ par(oldpar)
 cat(example_code, file = file.path(example_project, "checkpoint_example_code.R"))
 
 
-## ----checkpoint, warning=FALSE-------------------------------------------
+## ----checkpoint, warning=FALSE------------------------------------------------
 ## Create a folder to contain the checkpoint
 ## This is optional - the default is to use ~/.checkpoint
 
@@ -46,20 +46,20 @@ library(checkpoint)
 checkpoint("2017-04-01", project = example_project, 
            checkpointLocation = tempdir())
 
-## ----inspect-1-----------------------------------------------------------
+## ----inspect-1----------------------------------------------------------------
 getOption("repos")
 
-## ----inspect-2-----------------------------------------------------------
+## ----inspect-2----------------------------------------------------------------
 normalizePath(.libPaths(), winslash = "/")
 
-## ----inspect-3, eval=FALSE-----------------------------------------------
+## ----inspect-3, eval=FALSE----------------------------------------------------
 #  installed.packages(.libPaths()[1])[, "Package"]
 
-## ----cleanup, include=TRUE-----------------------------------------------
+## ----cleanup, include=TRUE----------------------------------------------------
 ## cleanup
 
 unlink(example_project, recursive = TRUE)
-unlink(file.path(tempdir(), "checkpoint_example_code.R"))
+unlink(file.path(example_project, "checkpoint_example_code.R"))
 unlink(file.path(tempdir(), ".checkpoint"), recursive = TRUE)
 options(repos = oldRepos)
 unCheckpoint(oldLibPaths)
