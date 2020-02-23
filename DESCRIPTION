@@ -15,7 +15,7 @@ Description: The goal of checkpoint is to solve the problem of package
     server (<https://mran.microsoft.com/>). Immediately after completion
     of the rsync mirror process, the process takes a snapshot, thus creating the
     archive. Snapshot archives exist starting from 2014-09-17.
-Version: 0.4.8
+Version: 0.4.9
 Authors@R: c(
     person("Hong", "Ooi", , "hongooi@microsoft.com", role=c("aut", "cre")),
     person("Andrie", "de Vries", role="aut"),
@@ -30,10 +30,10 @@ Suggests: knitr, rmarkdown, testthat(>= 0.9), MASS, darts, mockery, cli
 VignetteBuilder: knitr
 RoxygenNote: 6.1.1
 NeedsCompilation: no
-Packaged: 2020-01-13 10:22:38 UTC; hongo
+Packaged: 2020-02-23 01:16:52 UTC; hongo
 Author: Hong Ooi [aut, cre],
   Andrie de Vries [aut],
   Microsoft [aut, cph]
 Maintainer: Hong Ooi <hongooi@microsoft.com>
 Repository: CRAN
-Date/Publication: 2020-01-13 10:50:02 UTC
+Date/Publication: 2020-02-23 05:10:02 UTC
