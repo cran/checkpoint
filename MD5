@@ -1,6 +1,6 @@
-036c111359e89972ce99e067ea81a23c *DESCRIPTION
+6d29460ad245e1d2e975d77693eb958c *DESCRIPTION
 3be052b898bab592b05201662bc95a68 *NAMESPACE
-40611b259b000ad5ec631b0864fee62c *NEWS.md
+454897ddadeb9bfd81ebbc177b2aac2a *NEWS.md
 af6abec43ee8e8b60ad0488bdfeea1d0 *R/checkpoint-package.R
 a3d54abd873018b29a383f7a17749aec *R/checkpoint.R
 7d63625ab9f938efa6b4edb0eed20f59 *R/create_snapshot_dir.R
@@ -11,9 +11,9 @@ b2cfbf62e17f2de374f6f9b2eb6b821a *R/get_confirmation.R
 a67cffa5ff83da08cc8c94081a6bdb3d *R/scan_project_files.R
 0c92ab447d06cc12775716111ebdb04e *R/zzz.R
 c6e08f51dfb43b4b873c0c25a5fdaedd *README.md
-753c204ffbfa81435021fa1c0ef67da1 *build/vignette.rds
+df26ca6cfdb9c3005bc74f6c30552a69 *build/vignette.rds
 fcd59611973958de863baf3618fe7fdd *inst/doc/checkpoint.Rmd
-f26bcd35b682e72679c4b5cf56747831 *inst/doc/checkpoint.html
+340ce8c86a49c718a7db6ba95e62bc2a *inst/doc/checkpoint.html
 20bd8b21181b2f16d5849f3ab3783ec8 *inst/examples/example_checkpoint.Rex
 42ac12ab3611b5a30baec1dd0dcb0303 *inst/examples/example_mran.Rex
 c9829a01ed95525d1b1f4341ca8d6bcb *man/checkpoint-package.Rd
