@@ -15,7 +15,7 @@ Description: The goal of checkpoint is to solve the problem of package
     server (<https://mran.microsoft.com/>). Immediately after completion
     of the rsync mirror process, the process takes a snapshot, thus creating the
     archive. Snapshot archives exist starting from 2014-09-17.
-Version: 1.0.1
+Version: 1.0.2
 Authors@R: c(
     person("Folashade", "Daniel", role="cre", email="fdaniel@microsoft.com"),
     person("Hong", "Ooi", role="aut"),
@@ -33,7 +33,7 @@ VignetteBuilder: knitr
 Encoding: UTF-8
 RoxygenNote: 7.1.0
 NeedsCompilation: no
-Packaged: 2022-01-08 00:41:58 UTC; fdaniel
+Packaged: 2022-01-28 18:49:51 UTC; fdaniel
 Author: Folashade Daniel [cre],
   Hong Ooi [aut],
   Andrie de Vries [aut],
@@ -41,4 +41,4 @@ Author: Folashade Daniel [cre],
   Microsoft [aut, cph]
 Maintainer: Folashade Daniel <fdaniel@microsoft.com>
 Repository: CRAN
-Date/Publication: 2022-01-08 01:42:51 UTC
+Date/Publication: 2022-01-28 19:10:09 UTC

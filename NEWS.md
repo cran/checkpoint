@@ -1,3 +1,7 @@
+# checkpoint 1.0.2
+
+* Output objects from pkgdepends are now saved as rds files instead of json. This is because pkgdepends has the format of some objects to be environments, rather than data frames or lists. This fixes the `object of type environment is not subsettable` error.
+
 # checkpoint 1.0.1
 
 * Maintainer change (Folashade Daniel; fdaniel@microsoft.com).

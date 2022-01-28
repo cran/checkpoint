@@ -1,12 +1,12 @@
-6d29460ad245e1d2e975d77693eb958c *DESCRIPTION
+181caa2aa8014201551bef27fe5d7190 *DESCRIPTION
 3be052b898bab592b05201662bc95a68 *NAMESPACE
-454897ddadeb9bfd81ebbc177b2aac2a *NEWS.md
+cb204dcd350156525c375a829f03b5da *NEWS.md
 af6abec43ee8e8b60ad0488bdfeea1d0 *R/checkpoint-package.R
 a3d54abd873018b29a383f7a17749aec *R/checkpoint.R
 7d63625ab9f938efa6b4edb0eed20f59 *R/create_snapshot_dir.R
 49acb5fcdde6f8471d03d37b61b327ed *R/fixRstudioBug.R
 b2cfbf62e17f2de374f6f9b2eb6b821a *R/get_confirmation.R
-84523b922d5512aa6e39024544b73477 *R/install_pkgs.R
+1daa1462ae0a582e1dfd8c0b9a37f7be *R/install_pkgs.R
 872eb5e93e44c65d3f10be6048764957 *R/mran_utils.R
 a67cffa5ff83da08cc8c94081a6bdb3d *R/scan_project_files.R
 0c92ab447d06cc12775716111ebdb04e *R/zzz.R
